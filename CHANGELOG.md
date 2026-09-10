@@ -20,10 +20,11 @@ _No unreleased changes._
 **Added**
 
 - `PulseEvent` sealed base class with full serialization contract (`toJson`)
-- `ErrorEvent`, `ExceptionEvent`, `BreadcrumbEvent`, `CustomEvent`, `NetworkEvent` event types
+- `ErrorEvent`, `ExceptionEvent`, `BreadcrumbEvent`, `CustomEvent`, `NetworkEvent`, `TransactionEvent` event types
 - `PulseEventType` enum for event categorization
 - `PulseContext` immutable device/app metadata carrier
 - `PulseConfig` immutable configuration value object with DSN validation
+- `PulsePerformanceConfig` for sampling and slow operation thresholds
 - `PulseTransport` abstract interface for pluggable event delivery
 - `NoOpTransport` default no-operation transport for development/testing
 - `PulseStorage` abstract interface for future offline queuing (no implementation)
@@ -39,6 +40,7 @@ _No unreleased changes._
 - `IdGenerator` interface and `UuidGenerator` UUID v4 implementation
 - `PulseNetworkConfig` and `PulseNetworkObserver` for HTTP request/response metric capturing
 - `PulsePlatform` string constants for standard platform identifiers
+- `PulseTransaction`, `ActivePulseSpan`, and `PulseSpan` for performance measurement
 - `kPulseSdkVersion` SDK version constant
 
 ### pulse_dev_flutter
@@ -46,9 +48,10 @@ _No unreleased changes._
 **Added**
 
 - `Pulse` static facade with `initialize`, `captureException`, `captureError`,
-  `addBreadcrumb`, `track`, `run`, `close`, and `isInitialized`
+  `addBreadcrumb`, `track`, `run`, `close`, `startTransaction`, and `isInitialized`
 - `Pulse.network` static getter for exposing `PulseNetworkObserver` to adapter packages
 - `PulseClient` internal stateful coordinator
+- `FlutterPerformanceIntegration` capturing application startup time and slow UI operations
 - `FlutterErrorIntegration` hooking `FlutterError.onError` (chains previous handler)
 - `ZoneErrorIntegration` providing `runZonedGuarded`-based unhandled error capture
 - `FlutterContextCollector` populating `PulseContext` from Flutter platform APIs

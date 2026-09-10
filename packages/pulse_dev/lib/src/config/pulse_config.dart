@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import '../logging/no_op_logger.dart';
 import '../logging/pulse_logger.dart';
 import '../network/pulse_network_config.dart';
+import '../performance/pulse_performance_config.dart';
 import '../pipeline/event_processor.dart';
 import '../sanitization/default_sanitizer.dart';
 import '../sanitization/pulse_sanitization_config.dart';
@@ -93,6 +94,11 @@ final class PulseConfig {
   /// Governs capture controls for URL redaction, payloads, headers, and sampling.
   final PulseNetworkConfig network;
 
+  /// The performance telemetry configuration.
+  ///
+  /// Governs capture controls for transactions, spans, startup times, and sampling.
+  final PulsePerformanceConfig performance;
+
   /// The sanitizer applied to every event before transport.
   ///
   /// Defaults to `null`, which causes the pipeline to automatically construct
@@ -145,6 +151,7 @@ final class PulseConfig {
     this.sampleRate = 1.0,
     this.sanitization = const PulseSanitizationConfig(),
     this.network = const PulseNetworkConfig.defaults(),
+    this.performance = const PulsePerformanceConfig(),
     this.transport = const NoOpTransport(),
     this.sanitizer,
     this.logger = const NoOpLogger(),

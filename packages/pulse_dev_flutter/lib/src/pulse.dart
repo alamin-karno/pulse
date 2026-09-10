@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart' show WidgetsFlutterBinding;
-import 'package:flutter/material.dart' show WidgetsFlutterBinding;
-import 'package:flutter/widgets.dart' show WidgetsFlutterBinding;
-import 'package:meta/meta.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pulse_dev/pulse_dev.dart';
 
 import 'integrations/zone_error_integration.dart';
@@ -168,6 +165,27 @@ abstract final class Pulse {
     Map<String, dynamic>? properties,
   }) {
     _client?.track(name, properties: properties);
+  }
+
+  /// Tracks a custom performance transaction.
+  ///
+  /// ```dart
+  /// final tx = Pulse.startTransaction('load_dashboard');
+  /// try {
+  ///   await loadData();
+  ///   tx.finish();
+  /// } catch (e) {
+  ///   tx.finish(error: e);
+  /// }
+  /// ```
+  ///
+  /// Returns a No-Op transaction if the SDK is uninitialized, disabled,
+  /// or if the transaction is dropped due to sampling configuration.
+  static PulseTransaction startTransaction(String name) {
+    if (_client == null || !isInitialized) {
+      return PulseTransaction.noOp(name);
+    }
+    return _client!.startTransaction(name);
   }
 
   /// Runs [body] inside a zone that captures unhandled errors.

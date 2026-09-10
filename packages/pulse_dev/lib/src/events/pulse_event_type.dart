@@ -29,6 +29,9 @@ enum PulseEventType {
 
   /// A network request/response captured via [PulseNetworkObserver].
   network,
+
+  /// A performance transaction event.
+  transaction,
 }
 
 /// Standard platform identifier strings used in [PulseEvent.platform].

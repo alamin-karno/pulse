@@ -1,9 +1,11 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:pulse_dev/pulse_dev.dart';
 
 import '../pulse_dev_flutter.dart' show Pulse;
 import 'context/flutter_context_collector.dart';
 import 'integrations/flutter_error_integration.dart';
+import 'performance/flutter_performance_integration.dart';
 import 'pulse.dart' show Pulse;
 
 /// Internal stateful coordinator for the Pulse SDK.
@@ -24,8 +26,10 @@ final class PulseClient {
     required PulseConfig config,
     required PulseContext context,
     Clock? clock,
+    Random? random,
     IdGenerator? idGenerator,
     FlutterErrorIntegration? flutterErrorIntegration,
+    FlutterPerformanceIntegration? flutterPerformanceIntegration,
   })  : _config = config,
         _pipeline = EventPipeline.fromConfig(config),
         _breadcrumbBuffer = BreadcrumbBuffer(
@@ -35,6 +39,7 @@ final class PulseClient {
         _idGenerator = idGenerator ?? const UuidGenerator(),
         _context = context,
         _flutterErrorIntegration = flutterErrorIntegration,
+        _flutterPerformanceIntegration = flutterPerformanceIntegration,
         _networkObserver = PulseNetworkObserver(
           config: config,
           pipeline: EventPipeline.fromConfig(config),
@@ -44,7 +49,8 @@ final class PulseClient {
           context: context,
           idGenerator: idGenerator,
           clock: clock,
-        );
+        ),
+        _random = random ?? Random();
   final PulseConfig _config;
   final EventPipeline _pipeline;
   final BreadcrumbBuffer _breadcrumbBuffer;
@@ -52,7 +58,13 @@ final class PulseClient {
   final IdGenerator _idGenerator;
   final PulseContext _context;
   final FlutterErrorIntegration? _flutterErrorIntegration;
+  final FlutterPerformanceIntegration? _flutterPerformanceIntegration;
   final PulseNetworkObserver _networkObserver;
+  final Random _random;
+
+  /// The active performance integration, if enabled.
+  FlutterPerformanceIntegration? get flutterPerformanceIntegration =>
+      _flutterPerformanceIntegration;
 
   /// Creates a [PulseClient] from a [PulseConfig], collecting Flutter context.
   ///
@@ -64,13 +76,26 @@ final class PulseClient {
 
     final client = PulseClient(config: config, context: context);
 
+    FlutterErrorIntegration? flutterErrorIntegration;
     if (config.captureFlutterErrors) {
-      final integration = FlutterErrorIntegration(client);
-      integration.install();
+      flutterErrorIntegration = FlutterErrorIntegration(client);
+      flutterErrorIntegration.install();
+    }
+
+    FlutterPerformanceIntegration? flutterPerformanceIntegration;
+    if (config.performance.enabled) {
+      flutterPerformanceIntegration =
+          FlutterPerformanceIntegration(config, client);
+      flutterPerformanceIntegration.install();
+    }
+
+    if (flutterErrorIntegration != null ||
+        flutterPerformanceIntegration != null) {
       return PulseClient(
         config: config,
         context: context,
-        flutterErrorIntegration: integration,
+        flutterErrorIntegration: flutterErrorIntegration,
+        flutterPerformanceIntegration: flutterPerformanceIntegration,
       );
     }
 
@@ -223,6 +248,36 @@ final class PulseClient {
     _flutterErrorIntegration?.uninstall();
     await _pipeline.close();
     _breadcrumbBuffer.clear();
+  }
+
+  /// Starts a performance transaction.
+  ///
+  /// If performance monitoring is disabled or the transaction is dropped
+  /// due to sampling, a lightweight No-Op transaction is returned.
+  PulseTransaction startTransaction(String name) {
+    if (!_config.performance.enabled) {
+      return PulseTransaction.noOp(name);
+    }
+
+    // Evaluate sample rate
+    final sampleRate = _config.performance.sampleRate;
+    if (sampleRate < 1.0) {
+      if (sampleRate <= 0.0 || _random.nextDouble() > sampleRate) {
+        return PulseTransaction.noOp(name);
+      }
+    }
+
+    return PulseTransaction.create(
+      name: name,
+      config: _config,
+      pipeline: _pipeline,
+      platform: kIsWeb
+          ? PulsePlatform.web
+          : (_context.osName?.toLowerCase() ?? PulsePlatform.unknown),
+      context: _context,
+      idGenerator: _idGenerator,
+      clock: _clock,
+    );
   }
 
   /// The network observer, used by HTTP adapters to dispatch network events.

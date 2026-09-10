@@ -43,6 +43,8 @@ export 'src/events/pulse_event.dart'
         BreadcrumbLevel,
         CustomEvent,
         NetworkEvent,
+        TransactionEvent,
+        PulseSpan,
         kPulseSdkVersion,
         kPulseEventSchemaVersion;
 export 'src/events/pulse_event_type.dart';
@@ -63,6 +65,10 @@ export 'src/sanitization/pulse_sanitizer.dart';
 // ── Network ────────────────────────────────────────────────────────────────
 export 'src/network/pulse_network_config.dart';
 export 'src/network/pulse_network_observer.dart';
+
+// ── Performance ────────────────────────────────────────────────────────────
+export 'src/performance/pulse_performance_config.dart';
+export 'src/performance/pulse_transaction.dart';
 
 // ── Transport ──────────────────────────────────────────────────────────────
 export 'src/transport/no_op_transport.dart';

@@ -155,6 +155,25 @@ if (Pulse.network != null) {
 }
 ```
 
+### 6. Monitor performance
+
+```dart
+final transaction = Pulse.startTransaction('checkout_flow');
+
+try {
+  final span = transaction.startSpan('validate_cart');
+  await validateCart();
+  span.finish();
+
+  await processPayment();
+  
+  transaction.finish(status: 'ok');
+} catch (e) {
+  transaction.finish(status: 'error', error: e);
+  rethrow;
+}
+```
+
 ---
 
 ## Basic Usage
@@ -176,6 +195,11 @@ PulseConfig(
     captureHeaders: false,
     captureBody: false,
     redactQueryParameters: {'secret', 'token'},
+  ),
+  performance: PulsePerformanceConfig(        // Optional performance config
+    enabled: true,
+    sampleRate: 0.1,                          // sample 10% of transactions
+    detectSlowOperations: true,
   ),
   transport: MyCustomTransport(),             // bring your own transport
   sanitizer: MyCustomSanitizer(),             // bring your own sanitizer
@@ -266,8 +290,8 @@ Pulse is built privacy-first:
 | 3 | Error Intelligence MVP | ✅ Complete |
 | 4 | Privacy & Sanitization | ✅ Complete |
 | 5 | Network Intelligence (HTTP adapters) | ✅ Complete |
-| 6 | Offline Queueing & Storage | 🔜 Planned |
-| 7 | Performance monitoring (spans, transactions) | 🔜 Planned |
+| 6 | Performance Intelligence (spans, transactions) | ✅ Complete |
+| 7 | Offline Queueing & Storage | 🔜 Planned |
 
 ---
 

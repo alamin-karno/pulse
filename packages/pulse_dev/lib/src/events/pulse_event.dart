@@ -8,6 +8,7 @@ part 'exception_event.dart';
 part 'breadcrumb_event.dart';
 part 'custom_event.dart';
 part 'network_event.dart';
+part 'transaction_event.dart';
 
 /// The current schema version embedded in every serialized event.
 ///
