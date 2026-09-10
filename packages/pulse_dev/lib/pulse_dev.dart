@@ -79,8 +79,9 @@ export 'src/storage/in_memory_pulse_storage.dart';
 export 'src/storage/pulse_storage.dart';
 export 'src/queue/event_queue.dart';
 
-// ── Logging ────────────────────────────────────────────────────────────────
+// ── Logging & Observability ────────────────────────────────────────────────
 export 'src/logging/no_op_logger.dart';
+export 'src/logging/pulse_event_observer.dart';
 export 'src/logging/pulse_logger.dart';
 
 // ── Utilities ──────────────────────────────────────────────────────────────

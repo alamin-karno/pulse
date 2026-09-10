@@ -174,6 +174,25 @@ try {
 }
 ```
 
+### 7. Debug Inspector (Development Only)
+
+Pulse includes a powerful in-app overlay to inspect your telemetry events without leaving your app or checking the cloud dashboard. 
+
+Wrap your `MaterialApp` with `PulseInspector.builder()`:
+
+```dart
+MaterialApp(
+  builder: PulseInspector.builder(
+    // Optional: Only enable the inspector in development environments.
+    // The inspector automatically disables itself in release mode.
+    enabled: true, 
+  ),
+  home: const MyHomePage(),
+)
+```
+
+Tap the floating `Pulse` button to view your captured errors, network requests, breadcrumbs, and performance spans in real-time.
+
 ---
 
 ## Basic Usage
@@ -293,6 +312,7 @@ Pulse is built privacy-first:
 | 5 | Network Intelligence (HTTP adapters) | ✅ Complete |
 | 6 | Performance Intelligence (spans, transactions) | ✅ Complete |
 | 7 | Offline Queueing & Storage | ✅ Complete |
+| 8 | Debug Inspector (In-App Overlay) | ✅ Complete |
 
 ---
 

@@ -44,6 +44,7 @@ _No unreleased changes._
 - `PulseNetworkConfig` and `PulseNetworkObserver` for HTTP request/response metric capturing
 - `PulsePlatform` string constants for standard platform identifiers
 - `PulseTransaction`, `ActivePulseSpan`, and `PulseSpan` for performance measurement
+- `PulseEventObserver` interface for subscribing to telemetry events globally
 - `kPulseSdkVersion` SDK version constant
 
 ### pulse_dev_flutter
@@ -58,6 +59,8 @@ _No unreleased changes._
 - `FlutterErrorIntegration` hooking `FlutterError.onError` (chains previous handler)
 - `ZoneErrorIntegration` providing `runZonedGuarded`-based unhandled error capture
 - `FlutterContextCollector` populating `PulseContext` from Flutter platform APIs
+- `PulseInspector` overlay widget for in-app debug access to SDK telemetry
+- `InspectorState` in-memory telemetry ring buffer for `PulseInspector`
 - `pulse_example` reference Flutter application
 
 ### pulse_dio

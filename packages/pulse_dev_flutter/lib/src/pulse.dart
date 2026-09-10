@@ -208,6 +208,18 @@ abstract final class Pulse {
   /// Returns `null` if the SDK is not initialized.
   static PulseNetworkObserver? get network => _client?.networkObserver;
 
+  /// Adds an observer to receive processed events.
+  ///
+  /// Primarily used by developer tooling like the Pulse Debug Inspector.
+  static void addEventObserver(PulseEventObserver observer) {
+    _client?.addEventObserver(observer);
+  }
+
+  /// Removes an event observer.
+  static void removeEventObserver(PulseEventObserver observer) {
+    _client?.removeEventObserver(observer);
+  }
+
   /// Flushes pending events and shuts down the SDK.
   ///
   /// After calling [close], [isInitialized] returns `false` and all

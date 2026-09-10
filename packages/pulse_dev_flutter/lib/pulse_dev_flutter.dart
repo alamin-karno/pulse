@@ -59,5 +59,8 @@ export 'package:pulse_dev/pulse_dev.dart'
         kPulseSdkVersion,
         kPulseEventSchemaVersion;
 
+// ── UI Components ────────────────────────────────────────────────────────
+export 'src/inspector/pulse_inspector_widget.dart';
+
 // ── Public facade ──────────────────────────────────────────────────────────
 export 'src/pulse.dart';

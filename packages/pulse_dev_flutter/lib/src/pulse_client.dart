@@ -283,6 +283,16 @@ final class PulseClient {
   /// The network observer, used by HTTP adapters to dispatch network events.
   PulseNetworkObserver get networkObserver => _networkObserver;
 
+  /// Adds an observer to receive processed events.
+  void addEventObserver(PulseEventObserver observer) {
+    _pipeline.addObserver(observer);
+  }
+
+  /// Removes an observer.
+  void removeEventObserver(PulseEventObserver observer) {
+    _pipeline.removeObserver(observer);
+  }
+
   /// The current breadcrumb count (for testing/inspection).
   @visibleForTesting
   int get breadcrumbCount => _breadcrumbBuffer.length;

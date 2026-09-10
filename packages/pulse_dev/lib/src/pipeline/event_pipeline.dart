@@ -3,6 +3,7 @@ import 'dart:math';
 
 import '../config/pulse_config.dart';
 import '../events/pulse_event.dart';
+import '../logging/pulse_event_observer.dart';
 import '../logging/pulse_logger.dart';
 import '../queue/event_queue.dart';
 import '../sanitization/default_sanitizer.dart';
@@ -12,7 +13,7 @@ import '../transport/pulse_transport.dart';
 import '../utils/clock.dart';
 import 'event_processor.dart';
 
-/// Orchestrates the Pulse event pipeline.
+/// Orchestrates the end-to-end flow of an event through the SDK.
 ///
 /// Every [PulseEvent] flows through three mandatory stages:
 ///
@@ -69,6 +70,7 @@ final class EventPipeline {
 
   final double _sampleRate;
   final int _maxPayloadSizeBytes;
+  final List<PulseEventObserver> _observers = [];
 
   /// Creates an [EventPipeline] from a [PulseConfig].
   factory EventPipeline.fromConfig(PulseConfig config) {
@@ -171,6 +173,20 @@ final class EventPipeline {
       return;
     }
 
+    // ── Stage 2.75: Notify Observers (Dev Tools) ───────────────────────────
+    for (final observer in _observers) {
+      try {
+        observer.onEvent(sanitized);
+      } catch (error, stackTrace) {
+        _logger.log(
+          PulseLogLevel.error,
+          'Observer ${observer.runtimeType} threw an exception.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+
     // ── Stage 3: Queue & Transport ─────────────────────────────────────────
     await _queue.enqueue(sanitized);
   }
@@ -180,5 +196,17 @@ final class EventPipeline {
   /// Call this during SDK shutdown via [Pulse.close].
   Future<void> close() async {
     await _queue.close();
+  }
+
+  /// Adds an observer to receive processed events.
+  void addObserver(PulseEventObserver observer) {
+    if (!_observers.contains(observer)) {
+      _observers.add(observer);
+    }
+  }
+
+  /// Removes an observer.
+  void removeObserver(PulseEventObserver observer) {
+    _observers.remove(observer);
   }
 }
