@@ -176,7 +176,8 @@ void main() {
 
       await pipeline.process(EventFactory.customEvent());
       await pipeline.process(EventFactory.customEvent());
-      expect(transport.captured.length, 0, reason: 'sampleRate 0.0 should drop everything');
+      expect(transport.captured.length, 0,
+          reason: 'sampleRate 0.0 should drop everything');
 
       final transportHalf = CapturingTransport();
       final pipelineHalf = EventPipeline(
