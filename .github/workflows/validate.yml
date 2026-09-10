@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: "3.5.0"
+          channel: stable
       - name: Install dependencies
         working-directory: packages/pulse_dev
-        run: dart pub get
+        run: flutter pub get
       - name: Dry-run publish
         working-directory: packages/pulse_dev
         run: dart pub publish --dry-run

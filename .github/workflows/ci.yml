@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: "3.5.0"
+          channel: stable
       - name: Install dependencies
         working-directory: packages/pulse_dev
-        run: dart pub get
+        run: flutter pub get
       - name: Check formatting
         working-directory: packages/pulse_dev
         run: dart format --set-exit-if-changed .
@@ -33,12 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: "3.5.0"
+          channel: stable
       - name: Install dependencies
         working-directory: packages/pulse_dev
-        run: dart pub get
+        run: flutter pub get
       - name: Analyze
         working-directory: packages/pulse_dev
         run: dart analyze --fatal-infos .
@@ -49,12 +49,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: "3.5.0"
+          channel: stable
       - name: Install dependencies
         working-directory: packages/pulse_dev
-        run: dart pub get
+        run: flutter pub get
       - name: Run tests
         working-directory: packages/pulse_dev
         run: dart test --reporter=expanded
