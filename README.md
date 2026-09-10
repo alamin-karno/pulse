@@ -46,6 +46,8 @@ Pulse is different. It is open-source infrastructure that you own and control.
 |---------|-------------|---------|
 | [`pulse_dev`](packages/pulse_dev) | Pure Dart core — events, pipeline, interfaces | [![pub](https://img.shields.io/pub/v/pulse_dev.svg)](https://pub.dev/packages/pulse_dev) |
 | [`pulse_dev_flutter`](packages/pulse_dev_flutter) | Flutter integration — error capture, lifecycle | [![pub](https://img.shields.io/pub/v/pulse_dev_flutter.svg)](https://pub.dev/packages/pulse_dev_flutter) |
+| [`pulse_http`](packages/pulse_http) | Network observer wrapper for `package:http` | [![pub](https://img.shields.io/pub/v/pulse_http.svg)](https://pub.dev/packages/pulse_http) |
+| [`pulse_dio`](packages/pulse_dio) | Network interceptor for `package:dio` | [![pub](https://img.shields.io/pub/v/pulse_dio.svg)](https://pub.dev/packages/pulse_dio) |
 
 ---
 
@@ -128,6 +130,31 @@ Pulse.track(
 );
 ```
 
+### 5. Track network requests automatically
+
+If you use `package:http`:
+
+```dart
+import 'package:http/http.dart' as http;
+import 'package:pulse_http/pulse_http.dart';
+
+final client = Pulse.network != null 
+    ? PulseHttpClient(http.Client(), observer: Pulse.network!) 
+    : http.Client();
+```
+
+If you use `package:dio`:
+
+```dart
+import 'package:dio/dio.dart';
+import 'package:pulse_dio/pulse_dio.dart';
+
+final dio = Dio();
+if (Pulse.network != null) {
+  dio.interceptors.add(PulseDioInterceptor(observer: Pulse.network!));
+}
+```
+
 ---
 
 ## Basic Usage
@@ -144,6 +171,12 @@ PulseConfig(
   maxBreadcrumbs: 50,                         // default: 100
   captureFlutterErrors: true,                 // FlutterError.onError
   captureUnhandledErrors: true,               // runZonedGuarded
+  network: PulseNetworkConfig(                // Optional network config
+    enabled: true,
+    captureHeaders: false,
+    captureBody: false,
+    redactQueryParameters: {'secret', 'token'},
+  ),
   transport: MyCustomTransport(),             // bring your own transport
   sanitizer: MyCustomSanitizer(),             // bring your own sanitizer
   logger: MyDebugLogger(),                    // bring your own logger
@@ -228,12 +261,13 @@ Pulse is built privacy-first:
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 0 | Architecture and planning | ✅ Complete |
-| 1 | Error/exception capture, breadcrumbs, custom events | ✅ Complete |
-| 2 | HTTP transport, DSN parsing, retry logic | 🔜 Planned |
-| 3 | Offline queue, user identification, navigation tracking | 🔜 Planned |
-| 4 | Performance monitoring, spans, transactions | 🔜 Planned |
-| 5 | Network intelligence, HTTP interceptors | 🔜 Planned |
-| 6 | Remote configuration, feature flags | 🔜 Planned |
+| 1 | Project Foundation | ✅ Complete |
+| 2 | Event System & Pipeline | ✅ Complete |
+| 3 | Error Intelligence MVP | ✅ Complete |
+| 4 | Privacy & Sanitization | ✅ Complete |
+| 5 | Network Intelligence (HTTP adapters) | ✅ Complete |
+| 6 | Offline Queueing & Storage | 🔜 Planned |
+| 7 | Performance monitoring (spans, transactions) | 🔜 Planned |
 
 ---
 
