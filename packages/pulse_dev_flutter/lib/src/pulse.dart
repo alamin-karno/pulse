@@ -185,6 +185,11 @@ abstract final class Pulse {
     ZoneErrorIntegration.run(body, _client);
   }
 
+  /// The network observer, used by adapters to dispatch [NetworkEvent]s.
+  ///
+  /// Returns `null` if the SDK is not initialized.
+  static PulseNetworkObserver? get network => _client?.networkObserver;
+
   /// Flushes pending events and shuts down the SDK.
   ///
   /// After calling [close], [isInitialized] returns `false` and all

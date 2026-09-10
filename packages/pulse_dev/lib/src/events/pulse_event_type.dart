@@ -26,6 +26,9 @@ enum PulseEventType {
 
   /// A custom analytics-style event captured via [Pulse.track].
   custom,
+
+  /// A network request/response captured via [PulseNetworkObserver].
+  network,
 }
 
 /// Standard platform identifier strings used in [PulseEvent.platform].

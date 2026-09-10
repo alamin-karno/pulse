@@ -2,7 +2,7 @@
 
 **Open-source Flutter/Dart Developer Intelligence SDK**
 
-[![CI](https://github.com/pulse-dart/pulse/actions/workflows/ci.yml/badge.svg)](https://github.com/pulse-dart/pulse/actions/workflows/ci.yml)
+[![CI](https://github.com/alamin-karno/pulse/actions/workflows/ci.yml/badge.svg)](https://github.com/alamin-karno/pulse/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![pub.dev pulse_dev](https://img.shields.io/pub/v/pulse_dev.svg?label=pulse_dev)](https://pub.dev/packages/pulse_dev)
 [![pub.dev pulse_dev_flutter](https://img.shields.io/pub/v/pulse_dev_flutter.svg?label=pulse_dev_flutter)](https://pub.dev/packages/pulse_dev_flutter)

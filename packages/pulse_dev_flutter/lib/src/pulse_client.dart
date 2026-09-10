@@ -34,7 +34,17 @@ final class PulseClient {
         _clock = clock ?? const SystemClock(),
         _idGenerator = idGenerator ?? const UuidGenerator(),
         _context = context,
-        _flutterErrorIntegration = flutterErrorIntegration;
+        _flutterErrorIntegration = flutterErrorIntegration,
+        _networkObserver = PulseNetworkObserver(
+          config: config,
+          pipeline: EventPipeline.fromConfig(config),
+          platform: kIsWeb
+              ? PulsePlatform.web
+              : (context.osName?.toLowerCase() ?? PulsePlatform.unknown),
+          context: context,
+          idGenerator: idGenerator,
+          clock: clock,
+        );
   final PulseConfig _config;
   final EventPipeline _pipeline;
   final BreadcrumbBuffer _breadcrumbBuffer;
@@ -42,6 +52,7 @@ final class PulseClient {
   final IdGenerator _idGenerator;
   final PulseContext _context;
   final FlutterErrorIntegration? _flutterErrorIntegration;
+  final PulseNetworkObserver _networkObserver;
 
   /// Creates a [PulseClient] from a [PulseConfig], collecting Flutter context.
   ///
@@ -213,6 +224,9 @@ final class PulseClient {
     await _pipeline.close();
     _breadcrumbBuffer.clear();
   }
+
+  /// The network observer, used by HTTP adapters to dispatch network events.
+  PulseNetworkObserver get networkObserver => _networkObserver;
 
   /// The current breadcrumb count (for testing/inspection).
   @visibleForTesting
