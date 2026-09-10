@@ -1,0 +1,40 @@
+name: Validate Packages
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Mondays at 08:00 UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+jobs:
+  validate_core:
+    name: Publish dry-run (pulse_core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.5.0"
+      - name: Install dependencies
+        working-directory: packages/pulse_core
+        run: dart pub get
+      - name: Dry-run publish
+        working-directory: packages/pulse_core
+        run: dart pub publish --dry-run
+
+  validate_flutter:
+    name: Publish dry-run (pulse_flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        working-directory: packages/pulse_flutter
+        run: flutter pub get
+      - name: Dry-run publish
+        working-directory: packages/pulse_flutter
+        run: dart pub publish --dry-run

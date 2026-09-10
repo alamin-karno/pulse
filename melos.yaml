@@ -1,0 +1,74 @@
+name: pulse
+
+packages:
+  - packages/*
+  - examples/*
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  # ── Formatting ────────────────────────────────────────────────────────────
+  format:
+    run: dart format .
+    exec:
+      orderDependents: true
+    description: Format all packages.
+
+  format:check:
+    run: dart format --set-exit-if-changed .
+    exec:
+      orderDependents: true
+    description: Verify formatting is correct across all packages (CI).
+
+  # ── Analysis ──────────────────────────────────────────────────────────────
+  analyze:
+    run: dart analyze --fatal-infos .
+    exec:
+      orderDependents: true
+    description: Run static analysis across all packages.
+
+  analyze:flutter:
+    run: flutter analyze
+    exec:
+      orderDependents: true
+    packageFilters:
+      flutter: true
+    description: Run Flutter static analysis across Flutter packages.
+
+  # ── Testing ───────────────────────────────────────────────────────────────
+  test:
+    run: dart test
+    exec:
+      orderDependents: true
+    packageFilters:
+      flutter: false
+    description: Run unit tests for pure Dart packages.
+
+  test:flutter:
+    run: flutter test
+    exec:
+      orderDependents: true
+    packageFilters:
+      flutter: true
+    description: Run Flutter tests for Flutter packages.
+
+  # ── Publishing validation ─────────────────────────────────────────────────
+  publish:dry:
+    run: dart pub publish --dry-run
+    exec:
+      orderDependents: true
+    packageFilters:
+      published: true
+    description: Validate all publishable packages pass pub.dev checks.
+
+  # ── Combined checks ───────────────────────────────────────────────────────
+  check:
+    run: >
+      melos run format:check &&
+      melos run analyze &&
+      melos run analyze:flutter &&
+      melos run test &&
+      melos run test:flutter
+    description: Full pre-commit/pre-merge check suite.

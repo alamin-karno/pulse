@@ -1,0 +1,10 @@
+name: pulse_workspace
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+workspace:
+  - packages/pulse_core
+  - packages/pulse_flutter
+  - examples/pulse_example

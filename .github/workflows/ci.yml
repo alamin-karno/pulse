@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── pulse_core: format ──────────────────────────────────────────────────
+  format_core:
+    name: Format (pulse_core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.5.0"
+      - name: Install dependencies
+        working-directory: packages/pulse_core
+        run: dart pub get
+      - name: Check formatting
+        working-directory: packages/pulse_core
+        run: dart format --set-exit-if-changed .
+
+  # ── pulse_core: analyze ─────────────────────────────────────────────────
+  analyze_core:
+    name: Analyze (pulse_core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.5.0"
+      - name: Install dependencies
+        working-directory: packages/pulse_core
+        run: dart pub get
+      - name: Analyze
+        working-directory: packages/pulse_core
+        run: dart analyze --fatal-infos .
+
+  # ── pulse_core: test ────────────────────────────────────────────────────
+  test_core:
+    name: Test (pulse_core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.5.0"
+      - name: Install dependencies
+        working-directory: packages/pulse_core
+        run: dart pub get
+      - name: Run tests
+        working-directory: packages/pulse_core
+        run: dart test --reporter=expanded
+
+  # ── pulse_flutter: format ───────────────────────────────────────────────
+  format_flutter:
+    name: Format (pulse_flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        working-directory: packages/pulse_flutter
+        run: flutter pub get
+      - name: Check formatting
+        working-directory: packages/pulse_flutter
+        run: dart format --set-exit-if-changed .
+
+  # ── pulse_flutter: analyze ──────────────────────────────────────────────
+  analyze_flutter:
+    name: Analyze (pulse_flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        working-directory: packages/pulse_flutter
+        run: flutter pub get
+      - name: Analyze
+        working-directory: packages/pulse_flutter
+        run: flutter analyze --fatal-infos
+
+  # ── pulse_flutter: test ─────────────────────────────────────────────────
+  test_flutter:
+    name: Test (pulse_flutter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        working-directory: packages/pulse_flutter
+        run: flutter pub get
+      - name: Run tests
+        working-directory: packages/pulse_flutter
+        run: flutter test --reporter=expanded

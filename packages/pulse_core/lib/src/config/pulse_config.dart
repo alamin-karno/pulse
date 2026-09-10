@@ -1,0 +1,142 @@
+import 'package:meta/meta.dart';
+
+import '../logging/no_op_logger.dart';
+import '../logging/pulse_logger.dart';
+import '../pipeline/event_processor.dart';
+import '../sanitization/default_sanitizer.dart';
+import '../sanitization/pulse_sanitizer.dart';
+import '../transport/no_op_transport.dart';
+import '../transport/pulse_transport.dart';
+
+/// Immutable configuration for the Pulse SDK.
+///
+/// Pass a [PulseConfig] instance to [Pulse.initialize] before capturing
+/// any events. All fields have sensible defaults for production use.
+///
+/// ```dart
+/// await Pulse.initialize(
+///   const PulseConfig(
+///     dsn: 'https://your-key@ingest.example.com/your-project-id',
+///     environment: 'production',
+///     release: '1.0.0+1',
+///   ),
+/// );
+/// ```
+///
+/// ## DSN format
+///
+/// The [dsn] must be a URL of the form:
+/// `https://{public-key}@{host}/{project-id}`
+///
+/// Examples:
+/// - `https://abc123@ingest.pulse.dev/42`
+/// - `https://abc123@localhost:8080/1` (self-hosted)
+@immutable
+final class PulseConfig {
+  /// The Data Source Name identifying where events are sent.
+  ///
+  /// Must be a URL of the form `https://{key}@{host}/{project-id}`.
+  /// Parsed by the active [PulseTransport] implementation.
+  ///
+  /// When using [NoOpTransport] (the default), this field is accepted but
+  /// not used for any network requests.
+  final String dsn;
+
+  /// The deployment environment for captured events.
+  ///
+  /// Common values: `'production'`, `'staging'`, `'development'`.
+  /// Defaults to `'production'`.
+  final String environment;
+
+  /// The application release identifier.
+  ///
+  /// Typically the version string from your `pubspec.yaml` build number,
+  /// e.g., `'1.2.3+45'`. Used to correlate events with specific releases.
+  final String? release;
+
+  /// Whether the SDK should emit verbose diagnostic output.
+  ///
+  /// When `true`, the SDK logs internal pipeline events. This is useful
+  /// during integration but should be disabled in production.
+  /// Defaults to `false`.
+  final bool debug;
+
+  /// Whether the SDK is active.
+  ///
+  /// Set to `false` to globally disable all event capture without removing
+  /// the SDK from your codebase. Useful for toggling via remote config.
+  /// Defaults to `true`.
+  final bool enabled;
+
+  /// The transport used to deliver events.
+  ///
+  /// Defaults to [NoOpTransport], which discards all events. Provide a
+  /// real implementation for production use.
+  final PulseTransport transport;
+
+  /// The sanitizer applied to every event before transport.
+  ///
+  /// Defaults to [DefaultSanitizer]. Replace with a custom implementation
+  /// to extend or override the default redaction behavior.
+  final PulseSanitizer sanitizer;
+
+  /// The logger for SDK-internal diagnostics.
+  ///
+  /// Defaults to [NoOpLogger]. Provide a custom implementation to route
+  /// SDK log output to your preferred logging system.
+  final PulseLogger logger;
+
+  /// The maximum number of breadcrumbs retained in memory.
+  ///
+  /// When the buffer is full, the oldest breadcrumb is evicted. Set to `0`
+  /// to disable breadcrumb collection. Defaults to `100`.
+  final int maxBreadcrumbs;
+
+  /// Whether to automatically capture unhandled Dart errors and exceptions.
+  ///
+  /// When `true`, the SDK wraps the app in a `runZonedGuarded` zone via
+  /// [Pulse.run] and captures any unhandled errors. Defaults to `true`.
+  final bool captureUnhandledErrors;
+
+  /// Whether to automatically capture Flutter framework errors.
+  ///
+  /// When `true`, the SDK replaces `FlutterError.onError` and captures
+  /// widget tree and framework errors. The previous handler is still called.
+  /// Defaults to `true`.
+  final bool captureFlutterErrors;
+
+  /// An ordered list of processors applied to every event before sanitization.
+  ///
+  /// Processors run in list order. A processor may return `null` to drop the
+  /// event, or return a (possibly modified) event to continue the pipeline.
+  ///
+  /// Defaults to an empty list (no custom processors).
+  final List<EventProcessor> processors;
+
+  /// Creates a [PulseConfig].
+  ///
+  /// Only [dsn] is required. All other parameters have sensible defaults.
+  const PulseConfig({
+    required this.dsn,
+    this.environment = 'production',
+    this.release,
+    this.debug = false,
+    this.enabled = true,
+    this.transport = const NoOpTransport(),
+    this.sanitizer = const DefaultSanitizer(),
+    this.logger = const NoOpLogger(),
+    this.maxBreadcrumbs = 100,
+    this.captureUnhandledErrors = true,
+    this.captureFlutterErrors = true,
+    this.processors = const [],
+  }) : assert(maxBreadcrumbs >= 0, 'maxBreadcrumbs must be non-negative');
+
+  @override
+  String toString() => 'PulseConfig('
+      'environment: $environment, '
+      'release: $release, '
+      'debug: $debug, '
+      'enabled: $enabled, '
+      'maxBreadcrumbs: $maxBreadcrumbs'
+      ')';
+}
