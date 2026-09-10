@@ -16,8 +16,7 @@
 /// See [PulseConfig] for all configuration options.
 library pulse_dev_flutter;
 
-// ── Public facade ──────────────────────────────────────────────────────────
-export 'src/pulse.dart';
+import 'pulse_dev_flutter.dart' show Pulse, PulseConfig;
 
 // ── Core re-exports (consumers should not need pulse_dev directly) ────────
 export 'package:pulse_dev/pulse_dev.dart'
@@ -58,3 +57,6 @@ export 'package:pulse_dev/pulse_dev.dart'
         FakeIdGenerator,
         kPulseSdkVersion,
         kPulseEventSchemaVersion;
+
+// ── Public facade ──────────────────────────────────────────────────────────
+export 'src/pulse.dart';

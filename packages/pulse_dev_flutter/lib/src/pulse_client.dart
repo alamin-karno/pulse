@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 import 'package:pulse_dev/pulse_dev.dart';
 
+import '../pulse_dev_flutter.dart' show Pulse;
 import 'context/flutter_context_collector.dart';
 import 'integrations/flutter_error_integration.dart';
+import 'pulse.dart' show Pulse;
 
 /// Internal stateful coordinator for the Pulse SDK.
 ///
@@ -15,14 +16,6 @@ import 'integrations/flutter_error_integration.dart';
 /// use the [Pulse] static facade instead. [PulseClient] is exposed
 /// for advanced testing via `@visibleForTesting` accessors on [Pulse].
 final class PulseClient {
-  final PulseConfig _config;
-  final EventPipeline _pipeline;
-  final BreadcrumbBuffer _breadcrumbBuffer;
-  final Clock _clock;
-  final IdGenerator _idGenerator;
-  final PulseContext _context;
-  final FlutterErrorIntegration? _flutterErrorIntegration;
-
   /// Creates a [PulseClient] from a [PulseConfig].
   ///
   /// Collects Flutter context and installs integrations.
@@ -42,6 +35,13 @@ final class PulseClient {
         _idGenerator = idGenerator ?? const UuidGenerator(),
         _context = context,
         _flutterErrorIntegration = flutterErrorIntegration;
+  final PulseConfig _config;
+  final EventPipeline _pipeline;
+  final BreadcrumbBuffer _breadcrumbBuffer;
+  final Clock _clock;
+  final IdGenerator _idGenerator;
+  final PulseContext _context;
+  final FlutterErrorIntegration? _flutterErrorIntegration;
 
   /// Creates a [PulseClient] from a [PulseConfig], collecting Flutter context.
   ///

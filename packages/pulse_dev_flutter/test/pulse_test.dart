@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pulse_dev/pulse_dev.dart';
 import 'package:pulse_dev_flutter/pulse_dev_flutter.dart';
 
 import 'helpers/test_helpers.dart';
@@ -72,7 +71,7 @@ void main() {
       final transport = CapturingTransport();
       await Pulse.initialize(testConfig(transport: transport));
 
-      Pulse.captureException(FormatException('bad format'));
+      Pulse.captureException(const FormatException('bad format'));
 
       await Future<void>.delayed(Duration.zero);
       final event = transport.captured.first as ExceptionEvent;

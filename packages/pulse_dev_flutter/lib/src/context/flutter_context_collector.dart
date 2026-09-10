@@ -1,7 +1,14 @@
 import 'dart:io' show Platform;
 
+import 'package:flutter/cupertino.dart' show WidgetsFlutterBinding;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show WidgetsFlutterBinding;
+import 'package:flutter/widgets.dart' show WidgetsFlutterBinding;
 import 'package:pulse_dev/pulse_dev.dart';
+
+import '../../pulse_dev_flutter.dart' show Pulse;
+
+import '../pulse.dart' show Pulse;
 
 /// Collects device and application metadata from Flutter platform APIs.
 ///

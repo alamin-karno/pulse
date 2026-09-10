@@ -4,13 +4,13 @@ import 'package:test/test.dart';
 void main() {
   group('SystemClock', () {
     test('now() returns a UTC datetime', () {
-      final clock = const SystemClock();
+      const clock = SystemClock();
       final now = clock.now();
       expect(now.isUtc, isTrue);
     });
 
     test('now() returns a time close to DateTime.now()', () {
-      final clock = const SystemClock();
+      const clock = SystemClock();
       final before = DateTime.now().toUtc();
       final result = clock.now();
       final after = DateTime.now().toUtc();

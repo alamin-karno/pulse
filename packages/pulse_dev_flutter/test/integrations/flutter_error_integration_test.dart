@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pulse_dev/pulse_dev.dart';
 import 'package:pulse_dev_flutter/src/integrations/flutter_error_integration.dart';
-import 'package:pulse_dev_flutter/src/pulse_client.dart';
 import 'package:pulse_dev_flutter/src/pulse.dart';
+import 'package:pulse_dev_flutter/src/pulse_client.dart';
 
 import '../helpers/test_helpers.dart';
 
@@ -14,7 +14,7 @@ void main() {
   group('FlutterErrorIntegration — install/uninstall', () {
     test('install replaces FlutterError.onError', () {
       final transport = CapturingTransport();
-      final context = const PulseContext(osName: 'TestOS');
+      const context = PulseContext(osName: 'TestOS');
       final client = PulseClient(
         config: testConfig(
           transport: transport,

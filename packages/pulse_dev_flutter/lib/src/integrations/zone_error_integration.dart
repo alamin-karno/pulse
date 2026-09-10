@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:pulse_dev/pulse_dev.dart' show ExceptionEvent;
+
+import '../../pulse_dev_flutter.dart' show ExceptionEvent;
 import '../pulse_client.dart';
+import 'flutter_error_integration.dart' show FlutterErrorIntegration;
 
 /// Provides a [runZonedGuarded]-based wrapper for capturing unhandled errors.
 ///

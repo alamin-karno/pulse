@@ -4,19 +4,19 @@ import 'package:test/test.dart';
 void main() {
   group('UuidGenerator', () {
     test('generates a non-empty string', () {
-      final gen = const UuidGenerator();
+      const gen = UuidGenerator();
       expect(gen.newId(), isNotEmpty);
     });
 
     test('generates unique IDs on successive calls', () {
-      final gen = const UuidGenerator();
+      const gen = UuidGenerator();
       final ids = List.generate(100, (_) => gen.newId());
       final unique = ids.toSet();
       expect(unique.length, equals(100));
     });
 
     test('generates UUIDv4-formatted strings', () {
-      final gen = const UuidGenerator();
+      const gen = UuidGenerator();
       final id = gen.newId();
       // UUIDv4: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
       final uuidRegex = RegExp(

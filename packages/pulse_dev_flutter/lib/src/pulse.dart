@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart' show WidgetsFlutterBinding;
+import 'package:flutter/material.dart' show WidgetsFlutterBinding;
+import 'package:flutter/widgets.dart' show WidgetsFlutterBinding;
 import 'package:meta/meta.dart';
 import 'package:pulse_dev/pulse_dev.dart';
 

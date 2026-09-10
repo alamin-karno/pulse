@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:pulse_dev/pulse_dev.dart' show PulseConfig;
 
+import '../../pulse_dev_flutter.dart' show PulseConfig;
 import '../pulse_client.dart';
 
 /// Captures Flutter framework errors by hooking into [FlutterError.onError].
@@ -13,12 +15,11 @@ import '../pulse_client.dart';
 /// This integration is installed automatically when
 /// [PulseConfig.captureFlutterErrors] is `true` (the default).
 final class FlutterErrorIntegration {
+  /// Creates a [FlutterErrorIntegration] that reports errors via [_client].
+  FlutterErrorIntegration(this._client);
   final PulseClient _client;
   FlutterExceptionHandler? _previousHandler;
   bool _installed = false;
-
-  /// Creates a [FlutterErrorIntegration] that reports errors via [client].
-  FlutterErrorIntegration(this._client);
 
   /// Installs this integration by replacing [FlutterError.onError].
   ///
