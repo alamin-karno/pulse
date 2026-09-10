@@ -55,10 +55,10 @@ melos run analyze
 ### Run tests
 
 ```bash
-# Pure Dart tests (pulse_core)
+# Pure Dart tests (pulse_dev)
 melos run test
 
-# Flutter tests (pulse_flutter)
+# Flutter tests (pulse_dev_flutter)
 melos run test:flutter
 ```
 
@@ -126,7 +126,7 @@ Documentation improvements are always welcome. The main docs are:
 
 ### Architecture
 
-- `pulse_core` must remain Flutter-free — do not import `package:flutter` or `dart:ui`
+- `pulse_dev` must remain Flutter-free — do not import `package:flutter` or `dart:ui`
 - All interfaces must have documentation explaining the contract
 - All implementations must honor their interface contracts
 

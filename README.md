@@ -4,8 +4,8 @@
 
 [![CI](https://github.com/pulse-dart/pulse/actions/workflows/ci.yml/badge.svg)](https://github.com/pulse-dart/pulse/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![pub.dev pulse_core](https://img.shields.io/pub/v/pulse_core.svg?label=pulse_core)](https://pub.dev/packages/pulse_core)
-[![pub.dev pulse_flutter](https://img.shields.io/pub/v/pulse_flutter.svg?label=pulse_flutter)](https://pub.dev/packages/pulse_flutter)
+[![pub.dev pulse_dev](https://img.shields.io/pub/v/pulse_dev.svg?label=pulse_dev)](https://pub.dev/packages/pulse_dev)
+[![pub.dev pulse_dev_flutter](https://img.shields.io/pub/v/pulse_dev_flutter.svg?label=pulse_dev_flutter)](https://pub.dev/packages/pulse_dev_flutter)
 
 ---
 
@@ -44,25 +44,25 @@ Pulse is different. It is open-source infrastructure that you own and control.
 
 | Package | Description | Pub.dev |
 |---------|-------------|---------|
-| [`pulse_core`](packages/pulse_core) | Pure Dart core — events, pipeline, interfaces | [![pub](https://img.shields.io/pub/v/pulse_core.svg)](https://pub.dev/packages/pulse_core) |
-| [`pulse_flutter`](packages/pulse_flutter) | Flutter integration — error capture, lifecycle | [![pub](https://img.shields.io/pub/v/pulse_flutter.svg)](https://pub.dev/packages/pulse_flutter) |
+| [`pulse_dev`](packages/pulse_dev) | Pure Dart core — events, pipeline, interfaces | [![pub](https://img.shields.io/pub/v/pulse_dev.svg)](https://pub.dev/packages/pulse_dev) |
+| [`pulse_dev_flutter`](packages/pulse_dev_flutter) | Flutter integration — error capture, lifecycle | [![pub](https://img.shields.io/pub/v/pulse_dev_flutter.svg)](https://pub.dev/packages/pulse_dev_flutter) |
 
 ---
 
 ## Installation
 
-Add `pulse_flutter` to your Flutter application's `pubspec.yaml`:
+Add `pulse_dev_flutter` to your Flutter application's `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pulse_flutter: ^0.1.0
+  pulse_dev_flutter: ^0.1.0
 ```
 
-For pure Dart projects (CLI, server-side), use `pulse_core` directly:
+For pure Dart projects (CLI, server-side), use `pulse_dev` directly:
 
 ```yaml
 dependencies:
-  pulse_core: ^0.1.0
+  pulse_dev: ^0.1.0
 ```
 
 ---
@@ -75,7 +75,7 @@ In your `main.dart`, initialize Pulse before calling `runApp`:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:pulse_flutter/pulse_flutter.dart';
+import 'package:pulse_dev_flutter/pulse_dev_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -153,10 +153,10 @@ PulseConfig(
 
 ### Custom transport
 
-Implement `PulseTransport` from `pulse_core` to send events anywhere:
+Implement `PulseTransport` from `pulse_dev` to send events anywhere:
 
 ```dart
-import 'package:pulse_core/pulse_core.dart';
+import 'package:pulse_dev/pulse_dev.dart';
 
 final class MyTransport implements PulseTransport {
   @override
@@ -193,10 +193,10 @@ final class TaggingProcessor implements EventProcessor {
 Pulse follows a clean layered architecture:
 
 ```
-pulse_flutter  (Flutter integration, public API)
+pulse_dev_flutter  (Flutter integration, public API)
       │
       ▼
-pulse_core     (Pure Dart, event pipeline, interfaces)
+pulse_dev     (Pure Dart, event pipeline, interfaces)
 ```
 
 Every event flows through a mandatory pipeline:

@@ -1,0 +1,30 @@
+name: pulse_dev
+description: >-
+  Pure Dart core for the Pulse Developer Intelligence SDK.
+  Provides event models, the event pipeline, transport and storage interfaces,
+  privacy sanitization, breadcrumb buffering, and configuration.
+  Flutter-free — suitable for any Dart project.
+version: 0.1.0
+repository: https://github.com/pulse-dart/pulse
+homepage: https://github.com/pulse-dart/pulse
+issue_tracker: https://github.com/pulse-dart/pulse/issues
+
+topics:
+  - monitoring
+  - error-reporting
+  - observability
+  - analytics
+  - sdk
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+resolution: workspace
+
+dependencies:
+  meta: ^1.9.0
+  uuid: ^4.0.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0

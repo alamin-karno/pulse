@@ -15,7 +15,7 @@ _No unreleased changes._
 
 ## 0.1.0 — 2026-09-10
 
-### pulse_core
+### pulse_dev
 
 **Added**
 
@@ -40,7 +40,7 @@ _No unreleased changes._
 - `PulsePlatform` string constants for standard platform identifiers
 - `kPulseSdkVersion` SDK version constant
 
-### pulse_flutter
+### pulse_dev_flutter
 
 **Added**
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pulse_flutter/pulse_flutter.dart';
+import 'package:pulse_dev_flutter/pulse_dev_flutter.dart';
 
 /// Pulse SDK Example Application
 ///

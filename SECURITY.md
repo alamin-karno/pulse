@@ -38,7 +38,7 @@ Vulnerabilities we consider in-scope:
 
 - Privacy leakage — SDK collecting or transmitting data it should not
 - PII exposure — sensitive user data appearing in event payloads
-- Dependency vulnerabilities in `pulse_core` or `pulse_flutter`
+- Dependency vulnerabilities in `pulse_dev` or `pulse_dev_flutter`
 - SDK behavior that could be exploited to crash or destabilize the host app
 
 Out of scope:
