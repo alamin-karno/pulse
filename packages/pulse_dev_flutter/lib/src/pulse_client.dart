@@ -86,43 +86,61 @@ final class PulseClient {
   }) {
     if (!_config.enabled) return;
 
-    final event = ExceptionEvent(
-      id: _idGenerator.newId(),
-      timestamp: _clock.now(),
-      sdkVersion: kPulseSdkVersion,
-      appVersion: _config.release,
-      environment: _config.environment,
-      platform: _platform,
-      context: _context,
-      exceptionType: exception.runtimeType.toString(),
-      message: exception.toString(),
-      stackTrace: stackTrace,
-      breadcrumbs: _breadcrumbBuffer.breadcrumbs,
-      handled: handled,
-    );
+    try {
+      final event = ExceptionEvent(
+        id: _idGenerator.newId(),
+        timestamp: _clock.now(),
+        sdkVersion: kPulseSdkVersion,
+        appVersion: _config.release,
+        environment: _config.environment,
+        platform: _platform,
+        context: _context,
+        exceptionType: exception.runtimeType.toString(),
+        message: exception.toString(),
+        stackTrace: stackTrace,
+        breadcrumbs: _breadcrumbBuffer.breadcrumbs,
+        handled: handled,
+      );
 
-    _pipeline.process(event);
+      _pipeline.process(event);
+    } catch (e, st) {
+      _config.logger.log(
+        PulseLogLevel.error,
+        'Internal SDK error during captureException',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   /// Captures a Dart [Error] and sends it through the event pipeline.
   void captureError(Object error, {StackTrace? stackTrace}) {
     if (!_config.enabled) return;
 
-    final event = ErrorEvent(
-      id: _idGenerator.newId(),
-      timestamp: _clock.now(),
-      sdkVersion: kPulseSdkVersion,
-      appVersion: _config.release,
-      environment: _config.environment,
-      platform: _platform,
-      context: _context,
-      errorType: error.runtimeType.toString(),
-      message: error.toString(),
-      stackTrace: stackTrace,
-      breadcrumbs: _breadcrumbBuffer.breadcrumbs,
-    );
+    try {
+      final event = ErrorEvent(
+        id: _idGenerator.newId(),
+        timestamp: _clock.now(),
+        sdkVersion: kPulseSdkVersion,
+        appVersion: _config.release,
+        environment: _config.environment,
+        platform: _platform,
+        context: _context,
+        errorType: error.runtimeType.toString(),
+        message: error.toString(),
+        stackTrace: stackTrace,
+        breadcrumbs: _breadcrumbBuffer.breadcrumbs,
+      );
 
-    _pipeline.process(event);
+      _pipeline.process(event);
+    } catch (e, st) {
+      _config.logger.log(
+        PulseLogLevel.error,
+        'Internal SDK error during captureError',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   /// Records a breadcrumb and stores it in the buffer.
@@ -134,41 +152,59 @@ final class PulseClient {
   }) {
     if (!_config.enabled) return;
 
-    final event = BreadcrumbEvent(
-      id: _idGenerator.newId(),
-      timestamp: _clock.now(),
-      sdkVersion: kPulseSdkVersion,
-      appVersion: _config.release,
-      environment: _config.environment,
-      platform: _platform,
-      context: _context,
-      message: message,
-      category: category,
-      level: level,
-      data: data,
-    );
+    try {
+      final event = BreadcrumbEvent(
+        id: _idGenerator.newId(),
+        timestamp: _clock.now(),
+        sdkVersion: kPulseSdkVersion,
+        appVersion: _config.release,
+        environment: _config.environment,
+        platform: _platform,
+        context: _context,
+        message: message,
+        category: category,
+        level: level,
+        data: data,
+      );
 
-    _breadcrumbBuffer.add(event);
-    _pipeline.process(event);
+      _breadcrumbBuffer.add(event);
+      _pipeline.process(event);
+    } catch (e, st) {
+      _config.logger.log(
+        PulseLogLevel.error,
+        'Internal SDK error during addBreadcrumb',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   /// Captures a custom analytics-style event.
   void track(String name, {Map<String, dynamic>? properties}) {
     if (!_config.enabled) return;
 
-    final event = CustomEvent(
-      id: _idGenerator.newId(),
-      timestamp: _clock.now(),
-      sdkVersion: kPulseSdkVersion,
-      appVersion: _config.release,
-      environment: _config.environment,
-      platform: _platform,
-      context: _context,
-      name: name,
-      properties: properties ?? const {},
-    );
+    try {
+      final event = CustomEvent(
+        id: _idGenerator.newId(),
+        timestamp: _clock.now(),
+        sdkVersion: kPulseSdkVersion,
+        appVersion: _config.release,
+        environment: _config.environment,
+        platform: _platform,
+        context: _context,
+        name: name,
+        properties: properties ?? const {},
+      );
 
-    _pipeline.process(event);
+      _pipeline.process(event);
+    } catch (e, st) {
+      _config.logger.log(
+        PulseLogLevel.error,
+        'Internal SDK error during track',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   /// Closes the client, flushing the pipeline and uninstalling integrations.

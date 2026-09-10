@@ -23,6 +23,7 @@ void main() async {
       debug: true,
       transport: DebugTransport(),
       maxBreadcrumbs: 50,
+      sampleRate: 1.0, // Set to < 1.0 to drop a percentage of events
     ),
   );
 
@@ -151,6 +152,19 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     _appendLog('✅ Unhandled async error triggered — check console');
   }
 
+  void _triggerFlutterError() {
+    Pulse.addBreadcrumb('About to trigger a Flutter framework error');
+    // Simulating a layout or framework error
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: Exception('Simulated Flutter framework error.'),
+        stack: StackTrace.current,
+        library: 'pulse_example',
+      ),
+    );
+    _appendLog('✅ Flutter framework error triggered — check console');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,6 +199,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 _DemoButton(
                   label: 'Unhandled Error',
                   onPressed: _triggerUnhandled,
+                ),
+                _DemoButton(
+                  label: 'Flutter Error',
+                  onPressed: _triggerFlutterError,
                 ),
               ],
             ),

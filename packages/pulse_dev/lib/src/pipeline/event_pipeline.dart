@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../config/pulse_config.dart';
 import '../events/pulse_event.dart';
 import '../logging/pulse_logger.dart';
@@ -50,10 +52,14 @@ final class EventPipeline {
     required PulseSanitizer sanitizer,
     required PulseTransport transport,
     required PulseLogger logger,
+    double sampleRate = 1.0,
   })  : _processors = List.unmodifiable(processors),
         _sanitizer = sanitizer,
         _transport = transport,
-        _logger = logger;
+        _logger = logger,
+        _sampleRate = sampleRate;
+
+  final double _sampleRate;
 
   /// Creates an [EventPipeline] from a [PulseConfig].
   factory EventPipeline.fromConfig(PulseConfig config) => EventPipeline(
@@ -61,6 +67,7 @@ final class EventPipeline {
         sanitizer: config.sanitizer,
         transport: config.transport,
         logger: config.logger,
+        sampleRate: config.sampleRate,
       );
 
   /// Processes [event] through the full pipeline.
@@ -68,6 +75,17 @@ final class EventPipeline {
   /// This method never throws. Failures at each stage are caught, logged,
   /// and handled according to the stage's error policy.
   Future<void> process(PulseEvent event) async {
+    // ── Stage 0: Sampling ──────────────────────────────────────────────────
+    if (_sampleRate < 1.0) {
+      if (_sampleRate <= 0.0 || Random().nextDouble() >= _sampleRate) {
+        _logger.log(
+          PulseLogLevel.debug,
+          'Event dropped by sampling (rate: $_sampleRate)',
+        );
+        return;
+      }
+    }
+
     var current = event;
 
     // ── Stage 1: Processors ───────────────────────────────────────────────

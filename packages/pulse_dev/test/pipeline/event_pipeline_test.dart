@@ -164,6 +164,53 @@ void main() {
       await pipeline.close();
       expect(transport.isClosed, isTrue);
     });
+    test('drops events based on sampleRate', () async {
+      final transport = CapturingTransport();
+      final pipeline = EventPipeline(
+        processors: [],
+        sanitizer: const DefaultSanitizer(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        sampleRate: 0.0, // Drop all
+      );
+
+      await pipeline.process(EventFactory.customEvent());
+      await pipeline.process(EventFactory.customEvent());
+      expect(transport.captured.length, 0, reason: 'sampleRate 0.0 should drop everything');
+
+      final transportHalf = CapturingTransport();
+      final pipelineHalf = EventPipeline(
+        processors: [],
+        sanitizer: const DefaultSanitizer(),
+        transport: transportHalf,
+        logger: const NoOpLogger(),
+        sampleRate: 0.5,
+      );
+
+      // Statistically, sending 100 events with 0.5 sample rate should send
+      // roughly 50. We just assert it sends some but not all.
+      for (int i = 0; i < 100; i++) {
+        await pipelineHalf.process(EventFactory.customEvent());
+      }
+      expect(transportHalf.captured.length, greaterThan(0));
+      expect(transportHalf.captured.length, lessThan(100));
+    });
+
+    test('always sends events when sampleRate is 1.0', () async {
+      final transport = CapturingTransport();
+      final pipeline = EventPipeline(
+        processors: [],
+        sanitizer: const DefaultSanitizer(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        sampleRate: 1.0,
+      );
+
+      for (int i = 0; i < 10; i++) {
+        await pipeline.process(EventFactory.customEvent());
+      }
+      expect(transport.captured.length, 10);
+    });
   });
 }
 

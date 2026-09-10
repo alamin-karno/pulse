@@ -68,6 +68,13 @@ final class PulseConfig {
   /// Defaults to `true`.
   final bool enabled;
 
+  /// The fraction of events to send (0.0 to 1.0).
+  ///
+  /// When set to 1.0 (the default), all events are sent.
+  /// When set to 0.5, approximately 50% of events are dropped randomly.
+  /// When set to 0.0, all events are dropped (similar to `enabled = false`).
+  final double sampleRate;
+
   /// The transport used to deliver events.
   ///
   /// Defaults to [NoOpTransport], which discards all events. Provide a
@@ -122,6 +129,7 @@ final class PulseConfig {
     this.release,
     this.debug = false,
     this.enabled = true,
+    this.sampleRate = 1.0,
     this.transport = const NoOpTransport(),
     this.sanitizer = const DefaultSanitizer(),
     this.logger = const NoOpLogger(),
@@ -129,7 +137,9 @@ final class PulseConfig {
     this.captureUnhandledErrors = true,
     this.captureFlutterErrors = true,
     this.processors = const [],
-  }) : assert(maxBreadcrumbs >= 0, 'maxBreadcrumbs must be non-negative');
+  })  : assert(maxBreadcrumbs >= 0, 'maxBreadcrumbs must be non-negative'),
+        assert(sampleRate >= 0.0 && sampleRate <= 1.0,
+            'sampleRate must be between 0.0 and 1.0');
 
   @override
   String toString() => 'PulseConfig('
@@ -137,6 +147,7 @@ final class PulseConfig {
       'release: $release, '
       'debug: $debug, '
       'enabled: $enabled, '
+      'sampleRate: $sampleRate, '
       'maxBreadcrumbs: $maxBreadcrumbs'
       ')';
 }
