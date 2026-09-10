@@ -121,36 +121,36 @@ class _PulseInspectorState extends State<PulseInspector> {
             ),
           if (!_isExpanded)
             Positioned(
-            left: _position.dx,
-            top: _position.dy,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                setState(() {
-                  _position += details.delta;
-                });
-              },
-              onTap: _openInspector,
-              child: Material(
-                elevation: 6,
-                shape: const CircleBorder(),
-                color: Colors.black87,
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.monitor_heart,
-                      color: Colors.greenAccent,
-                      size: 24,
+              left: _position.dx,
+              top: _position.dy,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    _position += details.delta;
+                  });
+                },
+                onTap: _openInspector,
+                child: Material(
+                  elevation: 6,
+                  shape: const CircleBorder(),
+                  color: Colors.black87,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.monitor_heart,
+                        color: Colors.greenAccent,
+                        size: 24,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
