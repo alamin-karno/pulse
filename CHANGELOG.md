@@ -26,8 +26,11 @@ _No unreleased changes._
 - `PulseConfig` immutable configuration value object with DSN validation
 - `PulsePerformanceConfig` for sampling and slow operation thresholds
 - `PulseTransport` abstract interface for pluggable event delivery
+- `PulseTransportResult` enum to report delivery status (success, retryable, permanent)
 - `NoOpTransport` default no-operation transport for development/testing
-- `PulseStorage` abstract interface for future offline queuing (no implementation)
+- `PulseStorage` abstract interface for offline queuing storage
+- `InMemoryPulseStorage` memory-backed storage implementation
+- `EventQueue` coordinating storage, backoff, and transport delivery
 - `PulseSanitizer` abstract interface for privacy-preserving event sanitization
 - `DefaultSanitizer` with recursive redaction of 20+ sensitive key patterns
 - `EventProcessor` abstract interface for composable event enrichment/filtering

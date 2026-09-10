@@ -1,4 +1,3 @@
-import 'package:pulse_dev/pulse_dev.dart';
 import 'package:pulse_dev_flutter/pulse_dev_flutter.dart';
 
 /// Creates a [PulseConfig] suitable for tests.
@@ -28,7 +27,10 @@ final class CapturingTransport implements PulseTransport {
   bool isClosed = false;
 
   @override
-  Future<void> send(PulseEvent event) async => captured.add(event);
+  Future<PulseTransportResult> send(PulseEvent event) async {
+    captured.add(event);
+    return PulseTransportResult.success;
+  }
 
   @override
   Future<void> close() async => isClosed = true;

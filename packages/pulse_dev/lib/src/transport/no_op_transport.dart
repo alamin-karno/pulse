@@ -29,8 +29,9 @@ final class NoOpTransport implements PulseTransport {
   const NoOpTransport();
 
   @override
-  Future<void> send(PulseEvent event) async {
+  Future<PulseTransportResult> send(PulseEvent event) async {
     // Intentionally discards the event. No I/O performed.
+    return PulseTransportResult.success;
   }
 
   @override

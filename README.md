@@ -217,10 +217,11 @@ import 'package:pulse_dev/pulse_dev.dart';
 
 final class MyTransport implements PulseTransport {
   @override
-  Future<void> send(PulseEvent event) async {
+  Future<PulseTransportResult> send(PulseEvent event) async {
     // Send to your backend, file, or any destination
     final json = event.toJson();
     await myBackend.post('/events', json);
+    return PulseTransportResult.success;
   }
 
   @override
@@ -291,7 +292,7 @@ Pulse is built privacy-first:
 | 4 | Privacy & Sanitization | ✅ Complete |
 | 5 | Network Intelligence (HTTP adapters) | ✅ Complete |
 | 6 | Performance Intelligence (spans, transactions) | ✅ Complete |
-| 7 | Offline Queueing & Storage | 🔜 Planned |
+| 7 | Offline Queueing & Storage | ✅ Complete |
 
 ---
 

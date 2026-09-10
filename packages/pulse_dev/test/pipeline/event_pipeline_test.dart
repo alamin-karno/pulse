@@ -7,15 +7,22 @@ void main() {
   group('EventPipeline — happy path', () {
     test('sends event to transport after sanitization', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: const [],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
       final event = EventFactory.customEvent(name: 'test_event');
       await pipeline.process(event);
+      await pipeline.close();
 
       expect(transport.captured, hasLength(1));
       expect(transport.captured.first.id, equals(event.id));
@@ -28,24 +35,38 @@ void main() {
       final p2 = _TaggingProcessor('p2', log);
       final transport = CapturingTransport();
 
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
+
       final pipeline = EventPipeline(
         processors: [p1, p2],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
       await pipeline.process(EventFactory.customEvent());
+      await pipeline.close();
 
       expect(log, equals(['p1', 'p2']));
     });
 
     test('sanitizes event before transport', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: const [],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
@@ -53,6 +74,7 @@ void main() {
         properties: {'password': 'secret', 'screen': 'Login'},
       );
       await pipeline.process(event);
+      await pipeline.close();
 
       final sent = transport.captured.first as CustomEvent;
       expect(sent.properties['password'], equals('[REDACTED]'));
@@ -63,10 +85,16 @@ void main() {
   group('EventPipeline — processor drop', () {
     test('event is not transported when processor drops it', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: [DroppingProcessor()],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
@@ -77,17 +105,24 @@ void main() {
 
     test('processors after a dropping processor do not run', () async {
       final log = <String>[];
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: CapturingTransport(),
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: [
           DroppingProcessor(),
           _TaggingProcessor('should-not-run', log)
         ],
         sanitizer: const DefaultSanitizer(),
-        transport: CapturingTransport(),
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
       await pipeline.process(EventFactory.customEvent());
+      await pipeline.close();
 
       expect(log, isEmpty);
     });
@@ -96,14 +131,21 @@ void main() {
   group('EventPipeline — error isolation', () {
     test('throwing processor does not stop the pipeline', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: [ThrowingProcessor()],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
       await pipeline.process(EventFactory.customEvent());
+      await pipeline.close();
 
       // Event continues (with pre-processor state) and reaches transport
       expect(transport.captured, hasLength(1));
@@ -111,10 +153,16 @@ void main() {
 
     test('throwing sanitizer drops the event (privacy-safe)', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: const [],
         sanitizer: ThrowingSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
@@ -124,10 +172,16 @@ void main() {
     });
 
     test('throwing transport does not propagate exception', () async {
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: ThrowingTransport(),
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: const [],
         sanitizer: const DefaultSanitizer(),
-        transport: ThrowingTransport(),
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
@@ -154,10 +208,16 @@ void main() {
   group('EventPipeline — close', () {
     test('close flushes the transport', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: const [],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
       );
 
@@ -166,24 +226,37 @@ void main() {
     });
     test('drops events based on sampleRate', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: [],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
         sampleRate: 0.0, // Drop all
       );
 
       await pipeline.process(EventFactory.customEvent());
       await pipeline.process(EventFactory.customEvent());
+      await pipeline.close();
       expect(transport.captured.length, 0,
           reason: 'sampleRate 0.0 should drop everything');
 
       final transportHalf = CapturingTransport();
+      final queueHalf = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transportHalf,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipelineHalf = EventPipeline(
         processors: [],
         sanitizer: const DefaultSanitizer(),
-        transport: transportHalf,
+        queue: queueHalf,
         logger: const NoOpLogger(),
         sampleRate: 0.5,
       );
@@ -193,16 +266,23 @@ void main() {
       for (int i = 0; i < 100; i++) {
         await pipelineHalf.process(EventFactory.customEvent());
       }
+      await pipelineHalf.close();
       expect(transportHalf.captured.length, greaterThan(0));
       expect(transportHalf.captured.length, lessThan(100));
     });
 
     test('always sends events when sampleRate is 1.0', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: [],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
         sampleRate: 1.0,
       );
@@ -210,15 +290,22 @@ void main() {
       for (int i = 0; i < 10; i++) {
         await pipeline.process(EventFactory.customEvent());
       }
+      await pipeline.close();
       expect(transport.captured.length, 10);
     });
 
     test('drops event if it exceeds maxPayloadSizeBytes', () async {
       final transport = CapturingTransport();
+      final queue = EventQueue(
+        storage: InMemoryPulseStorage(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        clock: const SystemClock(),
+      );
       final pipeline = EventPipeline(
         processors: [],
         sanitizer: const DefaultSanitizer(),
-        transport: transport,
+        queue: queue,
         logger: const NoOpLogger(),
         maxPayloadSizeBytes: 100, // Very small limit
       );
@@ -228,6 +315,7 @@ void main() {
       );
 
       await pipeline.process(event);
+      await pipeline.close();
 
       // Should be dropped by Stage 2.5
       expect(transport.captured, isEmpty);

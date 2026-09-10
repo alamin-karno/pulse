@@ -4,9 +4,12 @@ import 'dart:math';
 import '../config/pulse_config.dart';
 import '../events/pulse_event.dart';
 import '../logging/pulse_logger.dart';
+import '../queue/event_queue.dart';
 import '../sanitization/default_sanitizer.dart';
 import '../sanitization/pulse_sanitizer.dart';
+import '../storage/in_memory_pulse_storage.dart';
 import '../transport/pulse_transport.dart';
+import '../utils/clock.dart';
 import 'event_processor.dart';
 
 /// Orchestrates the Pulse event pipeline.
@@ -23,9 +26,10 @@ import 'event_processor.dart';
 /// 2. **Sanitizer** — Mandatory privacy gate. If the sanitizer throws, the
 ///    event is **dropped** and not transported to prevent sending unsanitized
 ///    data.
-/// 3. **Transport** — The sanitized event is delivered via [PulseTransport].
-///    If the transport throws, the error is logged and the event is silently
-///    dropped.
+/// 3. **Queue** — The sanitized event is added to the offline [EventQueue],
+///    which persists it to storage.
+/// 4. **Transport** — The queue flushes to [PulseTransport], managing
+///    retries and backoff.
 ///
 /// ## Error isolation
 ///
@@ -43,7 +47,7 @@ import 'event_processor.dart';
 final class EventPipeline {
   final List<EventProcessor> _processors;
   final PulseSanitizer _sanitizer;
-  final PulseTransport _transport;
+  final EventQueue _queue;
   final PulseLogger _logger;
 
   /// Creates an [EventPipeline] with explicit dependencies.
@@ -52,13 +56,13 @@ final class EventPipeline {
   EventPipeline({
     required List<EventProcessor> processors,
     required PulseSanitizer sanitizer,
-    required PulseTransport transport,
+    required EventQueue queue,
     required PulseLogger logger,
     double sampleRate = 1.0,
     int maxPayloadSizeBytes = 1048576, // 1MB default
   })  : _processors = List.unmodifiable(processors),
         _sanitizer = sanitizer,
-        _transport = transport,
+        _queue = queue,
         _logger = logger,
         _sampleRate = sampleRate,
         _maxPayloadSizeBytes = maxPayloadSizeBytes;
@@ -67,15 +71,26 @@ final class EventPipeline {
   final int _maxPayloadSizeBytes;
 
   /// Creates an [EventPipeline] from a [PulseConfig].
-  factory EventPipeline.fromConfig(PulseConfig config) => EventPipeline(
-        processors: config.processors,
-        sanitizer:
-            config.sanitizer ?? DefaultSanitizer(config: config.sanitization),
-        transport: config.transport,
-        logger: config.logger,
-        sampleRate: config.sampleRate,
-        maxPayloadSizeBytes: config.sanitization.maxPayloadSizeBytes,
-      );
+  factory EventPipeline.fromConfig(PulseConfig config) {
+    final storage = config.storage ?? InMemoryPulseStorage();
+    final queue = EventQueue(
+      storage: storage,
+      transport: config.transport,
+      logger: config.logger,
+      clock: const SystemClock(),
+      maxQueueSize: config.maxQueueSize,
+    );
+
+    return EventPipeline(
+      processors: config.processors,
+      sanitizer:
+          config.sanitizer ?? DefaultSanitizer(config: config.sanitization),
+      queue: queue,
+      logger: config.logger,
+      sampleRate: config.sampleRate,
+      maxPayloadSizeBytes: config.sanitization.maxPayloadSizeBytes,
+    );
+  }
 
   /// Processes [event] through the full pipeline.
   ///
@@ -156,32 +171,14 @@ final class EventPipeline {
       return;
     }
 
-    // ── Stage 3: Transport ────────────────────────────────────────────────
-    try {
-      await _transport.send(sanitized);
-    } catch (error, stackTrace) {
-      _logger.log(
-        PulseLogLevel.error,
-        'Transport failed to send event ${sanitized.id}.',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
+    // ── Stage 3: Queue & Transport ─────────────────────────────────────────
+    await _queue.enqueue(sanitized);
   }
 
   /// Closes the pipeline by flushing the transport.
   ///
   /// Call this during SDK shutdown via [Pulse.close].
   Future<void> close() async {
-    try {
-      await _transport.close();
-    } catch (error, stackTrace) {
-      _logger.log(
-        PulseLogLevel.warning,
-        'Transport close failed.',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
+    await _queue.close();
   }
 }

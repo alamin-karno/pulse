@@ -36,7 +36,7 @@ void main() async {
 /// Replace this with a real HTTP transport in production.
 final class DebugTransport implements PulseTransport {
   @override
-  Future<void> send(PulseEvent event) async {
+  Future<PulseTransportResult> send(PulseEvent event) async {
     final json = event.toJson();
     debugPrint('──────────────────────────────────────────');
     debugPrint('[Pulse] Event sent:');
@@ -53,6 +53,7 @@ final class DebugTransport implements PulseTransport {
       debugPrint('  type      : ${json['exception_type']}');
     }
     debugPrint('──────────────────────────────────────────');
+    return PulseTransportResult.success;
   }
 
   @override

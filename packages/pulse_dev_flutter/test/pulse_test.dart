@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pulse_dev/pulse_dev.dart';
 import 'package:pulse_dev_flutter/pulse_dev_flutter.dart';
 
 import 'helpers/test_helpers.dart';

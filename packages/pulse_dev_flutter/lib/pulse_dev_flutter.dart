@@ -36,6 +36,7 @@ export 'package:pulse_dev/pulse_dev.dart'
         PulsePlatform,
         // Interfaces (for custom implementations)
         PulseTransport,
+        PulseTransportResult,
         PulseSanitizer,
         EventProcessor,
         PulseLogger,

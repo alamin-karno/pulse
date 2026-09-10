@@ -74,8 +74,10 @@ export 'src/performance/pulse_transaction.dart';
 export 'src/transport/no_op_transport.dart';
 export 'src/transport/pulse_transport.dart';
 
-// ── Storage ────────────────────────────────────────────────────────────────
+// ── Storage & Queue ────────────────────────────────────────────────────────
+export 'src/storage/in_memory_pulse_storage.dart';
 export 'src/storage/pulse_storage.dart';
+export 'src/queue/event_queue.dart';
 
 // ── Logging ────────────────────────────────────────────────────────────────
 export 'src/logging/no_op_logger.dart';

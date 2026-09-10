@@ -129,7 +129,10 @@ final class CapturingTransport implements PulseTransport {
   bool isClosed = false;
 
   @override
-  Future<void> send(PulseEvent event) async => captured.add(event);
+  Future<PulseTransportResult> send(PulseEvent event) async {
+    captured.add(event);
+    return PulseTransportResult.success;
+  }
 
   @override
   Future<void> close() async => isClosed = true;
@@ -144,7 +147,7 @@ final class CapturingTransport implements PulseTransport {
 /// A [PulseTransport] that always throws on [send].
 final class ThrowingTransport implements PulseTransport {
   @override
-  Future<void> send(PulseEvent event) async {
+  Future<PulseTransportResult> send(PulseEvent event) async {
     throw Exception('Transport failure');
   }
 

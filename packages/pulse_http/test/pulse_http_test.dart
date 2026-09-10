@@ -8,8 +8,9 @@ class SpyTransport implements PulseTransport {
   final List<PulseEvent> events = [];
 
   @override
-  Future<void> send(PulseEvent event) async {
+  Future<PulseTransportResult> send(PulseEvent event) async {
     events.add(event);
+    return PulseTransportResult.success;
   }
 
   Future<void> flush() async {}

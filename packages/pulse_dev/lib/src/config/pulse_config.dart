@@ -8,6 +8,8 @@ import '../pipeline/event_processor.dart';
 import '../sanitization/default_sanitizer.dart';
 import '../sanitization/pulse_sanitization_config.dart';
 import '../sanitization/pulse_sanitizer.dart';
+import '../storage/in_memory_pulse_storage.dart';
+import '../storage/pulse_storage.dart';
 import '../transport/no_op_transport.dart';
 import '../transport/pulse_transport.dart';
 
@@ -84,6 +86,17 @@ final class PulseConfig {
   /// real implementation for production use.
   final PulseTransport transport;
 
+  /// The local storage used to queue events.
+  ///
+  /// Defaults to [InMemoryPulseStorage]. Provide a persistent implementation
+  /// to ensure events survive application restarts.
+  final PulseStorage? storage;
+
+  /// The maximum number of events to hold in the queue.
+  ///
+  /// Defaults to 100. When exceeded, the oldest events are dropped.
+  final int maxQueueSize;
+
   /// The privacy and sanitization rules.
   ///
   /// Passed to the default sanitizer to configure redaction logic.
@@ -153,6 +166,8 @@ final class PulseConfig {
     this.network = const PulseNetworkConfig.defaults(),
     this.performance = const PulsePerformanceConfig(),
     this.transport = const NoOpTransport(),
+    this.storage,
+    this.maxQueueSize = 100,
     this.sanitizer,
     this.logger = const NoOpLogger(),
     this.maxBreadcrumbs = 100,
@@ -160,6 +175,7 @@ final class PulseConfig {
     this.captureFlutterErrors = true,
     this.processors = const [],
   })  : assert(maxBreadcrumbs >= 0, 'maxBreadcrumbs must be non-negative'),
+        assert(maxQueueSize > 0, 'maxQueueSize must be positive'),
         assert(sampleRate >= 0.0 && sampleRate <= 1.0,
             'sampleRate must be between 0.0 and 1.0');
 
