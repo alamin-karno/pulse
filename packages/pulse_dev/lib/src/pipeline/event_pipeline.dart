@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 
 import '../config/pulse_config.dart';
 import '../events/pulse_event.dart';
 import '../logging/pulse_logger.dart';
+import '../sanitization/default_sanitizer.dart';
 import '../sanitization/pulse_sanitizer.dart';
 import '../transport/pulse_transport.dart';
 import 'event_processor.dart';
@@ -53,21 +55,26 @@ final class EventPipeline {
     required PulseTransport transport,
     required PulseLogger logger,
     double sampleRate = 1.0,
+    int maxPayloadSizeBytes = 1048576, // 1MB default
   })  : _processors = List.unmodifiable(processors),
         _sanitizer = sanitizer,
         _transport = transport,
         _logger = logger,
-        _sampleRate = sampleRate;
+        _sampleRate = sampleRate,
+        _maxPayloadSizeBytes = maxPayloadSizeBytes;
 
   final double _sampleRate;
+  final int _maxPayloadSizeBytes;
 
   /// Creates an [EventPipeline] from a [PulseConfig].
   factory EventPipeline.fromConfig(PulseConfig config) => EventPipeline(
         processors: config.processors,
-        sanitizer: config.sanitizer,
+        sanitizer:
+            config.sanitizer ?? DefaultSanitizer(config: config.sanitization),
         transport: config.transport,
         logger: config.logger,
         sampleRate: config.sampleRate,
+        maxPayloadSizeBytes: config.sanitization.maxPayloadSizeBytes,
       );
 
   /// Processes [event] through the full pipeline.
@@ -126,6 +133,27 @@ final class EventPipeline {
         stackTrace: stackTrace,
       );
       return; // Privacy-safe: drop rather than send unsanitized.
+    }
+
+    // ── Stage 2.5: Payload Size Check ──────────────────────────────────────
+    try {
+      final jsonBytes = utf8.encode(jsonEncode(sanitized.toJson()));
+      if (jsonBytes.length > _maxPayloadSizeBytes) {
+        _logger.log(
+          PulseLogLevel.warning,
+          'Event dropped — payload size (${jsonBytes.length} bytes) exceeds '
+          'limit ($_maxPayloadSizeBytes bytes).',
+        );
+        return; // Drop oversized payload
+      }
+    } catch (error, stackTrace) {
+      _logger.log(
+        PulseLogLevel.error,
+        'Failed to verify payload size — dropping event.',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return;
     }
 
     // ── Stage 3: Transport ────────────────────────────────────────────────

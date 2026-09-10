@@ -54,16 +54,17 @@ export 'src/pipeline/event_pipeline.dart';
 export 'src/pipeline/event_processor.dart';
 export 'src/pipeline/processors/sanitizing_processor.dart';
 
+// ── Sanitization ───────────────────────────────────────────────────────────
+export 'src/sanitization/default_sanitizer.dart';
+export 'src/sanitization/pulse_sanitization_config.dart';
+export 'src/sanitization/pulse_sanitizer.dart';
+
 // ── Transport ──────────────────────────────────────────────────────────────
 export 'src/transport/no_op_transport.dart';
 export 'src/transport/pulse_transport.dart';
 
 // ── Storage ────────────────────────────────────────────────────────────────
 export 'src/storage/pulse_storage.dart';
-
-// ── Sanitization ───────────────────────────────────────────────────────────
-export 'src/sanitization/default_sanitizer.dart';
-export 'src/sanitization/pulse_sanitizer.dart';
 
 // ── Logging ────────────────────────────────────────────────────────────────
 export 'src/logging/no_op_logger.dart';

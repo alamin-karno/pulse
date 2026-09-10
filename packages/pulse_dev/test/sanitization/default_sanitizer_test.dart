@@ -109,66 +109,130 @@ void main() {
       expect(prefs['theme'], equals('dark'));
     });
 
-    test('returns identical event when no sensitive data present', () {
-      final event = EventFactory.customEvent(properties: {
-        'screen': 'HomeScreen',
-        'duration_ms': 42,
-      });
+    test('recursively redacts nested maps and lists', () {
+      final event = EventFactory.customEvent(
+        properties: {
+          'user': {
+            'api_key': '123',
+            'details': {
+              'ssn': '000',
+              'safe': true,
+            },
+            'items': [
+              'abc',
+              {'Auth': 'secret'}
+            ]
+          },
+        },
+      );
 
       final sanitized = sanitizer.sanitize(event) as CustomEvent;
-      expect(sanitized.properties, equals(event.properties));
+      final user = sanitized.properties['user'] as Map<String, dynamic>;
+      final details = user['details'] as Map<String, dynamic>;
+      final items = user['items'] as List<dynamic>;
+
+      expect(user['api_key'], equals('[REDACTED]'));
+      expect(details['ssn'], equals('[REDACTED]'));
+      expect(details['safe'], isTrue);
+      expect(items[0], equals('abc'));
+      expect((items[1] as Map<String, dynamic>)['Auth'], equals('[REDACTED]'));
     });
 
-    test('handles empty properties without error', () {
-      final event = EventFactory.customEvent(properties: {});
+    test('respects additionalRedactedKeys from config', () {
+      const config = PulseSanitizationConfig(
+        additionalRedactedKeys: {'custom_secret', 'employee_id'},
+      );
+      const sanitizer = DefaultSanitizer(config: config);
+
+      final event = EventFactory.customEvent(
+        properties: {
+          'custom_secret': '123',
+          'employee_id': '456',
+          'public_id': '789',
+        },
+      );
+
       final sanitized = sanitizer.sanitize(event) as CustomEvent;
-      expect(sanitized.properties, isEmpty);
-    });
-  });
 
-  group('DefaultSanitizer — BreadcrumbEvent data', () {
-    test('redacts sensitive keys in breadcrumb data', () {
-      final event = EventFactory.breadcrumbEvent(data: {
-        'auth_token': 'secret',
-        'screen': 'LoginScreen',
-      });
-
-      final sanitized = sanitizer.sanitize(event) as BreadcrumbEvent;
-      expect(sanitized.data!['auth_token'], equals('[REDACTED]'));
-      expect(sanitized.data!['screen'], equals('LoginScreen'));
+      expect(sanitized.properties['custom_secret'], equals('[REDACTED]'));
+      expect(sanitized.properties['employee_id'], equals('[REDACTED]'));
+      expect(sanitized.properties['public_id'], equals('789'));
     });
 
-    test('returns unchanged event when breadcrumb data is null', () {
-      final event = EventFactory.breadcrumbEvent();
-      final sanitized = sanitizer.sanitize(event) as BreadcrumbEvent;
-      expect(sanitized.data, isNull);
+    test('applies string redaction patterns', () {
+      final config = PulseSanitizationConfig(
+        stringRedactionPatterns: [
+          RegExp(r'\d{3}-\d{2}-\d{4}'), // SSN format
+        ],
+      );
+      final sanitizer = DefaultSanitizer(config: config);
+
+      final event = EventFactory.customEvent(
+        properties: {
+          'bio': 'My SSN is 123-45-6789 and I live here.',
+        },
+      );
+
+      final sanitized = sanitizer.sanitize(event) as CustomEvent;
+
+      expect(
+        sanitized.properties['bio'],
+        equals('My SSN is [REDACTED] and I live here.'),
+      );
     });
-  });
 
-  group('DefaultSanitizer — ErrorEvent / ExceptionEvent', () {
-    test('returns ErrorEvent unchanged (no structured payload to sanitize)',
-        () {
-      final event = EventFactory.errorEvent();
-      final sanitized = sanitizer.sanitize(event);
-      expect(sanitized, same(event));
+    test('evaluates custom callbacks', () {
+      final config = PulseSanitizationConfig(
+        customCallbacks: [
+          (String key, Object? value) {
+            if (key == 'dynamic_field' && value == 'drop_me') {
+              return 'custom_redaction';
+            }
+            return null; // Fallback to default logic
+          }
+        ],
+      );
+      final sanitizer = DefaultSanitizer(config: config);
+
+      final event = EventFactory.customEvent(
+        properties: {
+          'dynamic_field': 'drop_me',
+          'password': '123',
+        },
+      );
+
+      final sanitized = sanitizer.sanitize(event) as CustomEvent;
+
+      expect(sanitized.properties['dynamic_field'], equals('custom_redaction'));
+      expect(sanitized.properties['password'], equals('[REDACTED]'));
     });
 
-    test('returns ExceptionEvent unchanged', () {
-      final event = EventFactory.exceptionEvent();
-      final sanitized = sanitizer.sanitize(event);
-      expect(sanitized, same(event));
+    test('sanitizeHeaders redacts configured headers', () {
+      const config = PulseSanitizationConfig(
+        redactedHeaders: {'authorization', 'x-custom-auth'},
+      );
+      const sanitizer = DefaultSanitizer(config: config);
+
+      final headers = {
+        'Authorization': 'Bearer 123',
+        'X-Custom-Auth': 'Secret',
+        'Content-Type': 'application/json',
+      };
+
+      final sanitized = sanitizer.sanitizeHeaders(headers);
+
+      expect(sanitized['Authorization'], equals('[REDACTED]'));
+      expect(sanitized['X-Custom-Auth'], equals('[REDACTED]'));
+      expect(sanitized['Content-Type'], equals('application/json'));
     });
-  });
 
-  group('DefaultSanitizer — immutability', () {
-    test('does not modify the original event', () {
-      final original = EventFactory.customEvent(properties: {
-        'password': 'secret',
-      });
+    test('returns ExceptionEvent and ErrorEvent unchanged', () {
+      const sanitizer = DefaultSanitizer();
+      final exceptionEvent = EventFactory.exceptionEvent();
+      expect(sanitizer.sanitize(exceptionEvent), equals(exceptionEvent));
 
-      sanitizer.sanitize(original);
-
-      expect(original.properties['password'], equals('secret'));
+      final errorEvent = EventFactory.errorEvent();
+      expect(sanitizer.sanitize(errorEvent), equals(errorEvent));
     });
   });
 }

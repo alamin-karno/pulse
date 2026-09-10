@@ -212,6 +212,26 @@ void main() {
       }
       expect(transport.captured.length, 10);
     });
+
+    test('drops event if it exceeds maxPayloadSizeBytes', () async {
+      final transport = CapturingTransport();
+      final pipeline = EventPipeline(
+        processors: [],
+        sanitizer: const DefaultSanitizer(),
+        transport: transport,
+        logger: const NoOpLogger(),
+        maxPayloadSizeBytes: 100, // Very small limit
+      );
+
+      final event = EventFactory.customEvent(
+        properties: {'huge_data': 'a' * 500}, // > 100 bytes
+      );
+
+      await pipeline.process(event);
+
+      // Should be dropped by Stage 2.5
+      expect(transport.captured, isEmpty);
+    });
   });
 }
 

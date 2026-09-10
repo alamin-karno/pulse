@@ -4,6 +4,7 @@ import '../logging/no_op_logger.dart';
 import '../logging/pulse_logger.dart';
 import '../pipeline/event_processor.dart';
 import '../sanitization/default_sanitizer.dart';
+import '../sanitization/pulse_sanitization_config.dart';
 import '../sanitization/pulse_sanitizer.dart';
 import '../transport/no_op_transport.dart';
 import '../transport/pulse_transport.dart';
@@ -81,11 +82,17 @@ final class PulseConfig {
   /// real implementation for production use.
   final PulseTransport transport;
 
+  /// The privacy and sanitization rules.
+  ///
+  /// Passed to the default sanitizer to configure redaction logic.
+  final PulseSanitizationConfig sanitization;
+
   /// The sanitizer applied to every event before transport.
   ///
-  /// Defaults to [DefaultSanitizer]. Replace with a custom implementation
-  /// to extend or override the default redaction behavior.
-  final PulseSanitizer sanitizer;
+  /// Defaults to `null`, which causes the pipeline to automatically construct
+  /// a [DefaultSanitizer] using the [sanitization] rules.
+  /// Replace with a custom implementation if needed.
+  final PulseSanitizer? sanitizer;
 
   /// The logger for SDK-internal diagnostics.
   ///
@@ -130,8 +137,9 @@ final class PulseConfig {
     this.debug = false,
     this.enabled = true,
     this.sampleRate = 1.0,
+    this.sanitization = const PulseSanitizationConfig(),
     this.transport = const NoOpTransport(),
-    this.sanitizer = const DefaultSanitizer(),
+    this.sanitizer,
     this.logger = const NoOpLogger(),
     this.maxBreadcrumbs = 100,
     this.captureUnhandledErrors = true,

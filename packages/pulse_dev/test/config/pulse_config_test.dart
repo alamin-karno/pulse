@@ -48,9 +48,10 @@ void main() {
       expect(config.transport, isA<NoOpTransport>());
     });
 
-    test('sanitizer defaults to DefaultSanitizer', () {
+    test('defaults sanitizer is null (constructed by pipeline)', () {
       const config = PulseConfig(dsn: 'https://key@host.com/1');
-      expect(config.sanitizer, isA<DefaultSanitizer>());
+      expect(config.sanitizer, isNull);
+      expect(config.sanitization, isA<PulseSanitizationConfig>());
     });
 
     test('logger defaults to NoOpLogger', () {
