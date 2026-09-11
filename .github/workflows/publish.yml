@@ -1,0 +1,68 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+      - '*v[0-9]+.[0-9]+.[0-9]+*' # For package-specific tags e.g. pulse_dev-v1.0.0
+
+jobs:
+  publish_dry_run:
+    name: Publish dry-run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Dry-run — pulse_dev
+        working-directory: packages/pulse_dev
+        run: dart pub publish --dry-run
+      - name: Dry-run — pulse_dev_flutter
+        working-directory: packages/pulse_dev_flutter
+        run: dart pub publish --dry-run
+      - name: Dry-run — pulse_dio
+        working-directory: packages/pulse_dio
+        run: dart pub publish --dry-run
+      - name: Dry-run — pulse_http
+        working-directory: packages/pulse_http
+        run: dart pub publish --dry-run
+
+  publish:
+    name: Publish Packages
+    needs: publish_dry_run
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for pub.dev OIDC authentication
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Publish each package. Pub.dev automatically skips if the version is already published.
+      - name: Publish pulse_dev
+        working-directory: packages/pulse_dev
+        run: dart pub publish --force
+
+      - name: Publish pulse_dev_flutter
+        working-directory: packages/pulse_dev_flutter
+        run: dart pub publish --force
+
+      - name: Publish pulse_dio
+        working-directory: packages/pulse_dio
+        run: dart pub publish --force
+
+      - name: Publish pulse_http
+        working-directory: packages/pulse_http
+        run: dart pub publish --force

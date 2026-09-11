@@ -17,7 +17,6 @@ topics:
   - error-reporting
   - observability
   - analytics
-  - sdk
   - flutter
 
 environment:

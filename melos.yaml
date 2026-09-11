@@ -1,4 +1,4 @@
-name: pulse
+name: pulse_workspace
 
 packages:
   - packages/*
