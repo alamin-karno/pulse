@@ -1,4 +1,18 @@
+## Unreleased
 
+### Fixed
+- `FlutterContextCollector` no longer imports `dart:io`, which previously broke
+  Flutter Web compatibility. OS name now resolves via `defaultTargetPlatform`; OS
+  version resolution is isolated behind a conditional import
+  (`lib/src/context/os_version.dart`) so `dart:io` is never reachable on web.
+
+### Changed
+- Shortened the `pubspec.yaml` description to fit pub.dev's 60–180 character guidance.
+- Added dartdoc to `PulseInspector`'s default constructor (previously undocumented;
+  the file-wide `public_member_api_docs` ignore was narrowed accordingly).
+- Added `example/lib/main.dart` — a runnable Flutter app demonstrating initialization,
+  exception capture, breadcrumbs, custom events, and the Debug Inspector overlay —
+  needed for pub.dev's per-package example score.
 
 ## 0.1.0
 

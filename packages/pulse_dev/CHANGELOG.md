@@ -1,3 +1,11 @@
+## Unreleased
+
+### Changed
+- Shortened the `pubspec.yaml` description to fit pub.dev's 60–180 character guidance.
+- Added dartdoc to `PulseTransaction.create` (previously undocumented).
+- Added `example/example.dart` demonstrating `PulseConfig`, `EventPipeline`, and a
+  custom `PulseTransport` — needed for pub.dev's per-package example score.
+
 ## 0.1.0
 
 Initial release of `pulse_dev` — the pure Dart core of the Pulse SDK.

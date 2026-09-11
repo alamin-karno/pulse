@@ -15,7 +15,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-_No unreleased changes._
+Post-release pub.dev score and code-quality pass across all 4 packages (no public API
+changes). See each package's own CHANGELOG for details.
+
+- Added a per-package `example/` so pub.dev scores each package's own usage example.
+- Shortened `pulse_dev`, `pulse_dev_flutter`, and `pulse_http` pubspec descriptions to
+  fit pub.dev's 60–180 character guidance.
+- Completed dartdoc coverage on the remaining undocumented public API members.
+- Removed a leftover `dart create` template stub (`lib/src/pulse_http_base.dart`,
+  `lib/src/pulse_dio_base.dart`) that shipped unused in `pulse_http`/`pulse_dio`.
+- Fixed a Flutter Web incompatibility in `pulse_dev_flutter` caused by a `dart:io`
+  import in `FlutterContextCollector`.
+- Added `.github/ISSUE_TEMPLATE/`, a PR template, and `.github/FUNDING.yml`.
 
 ---
 
@@ -25,12 +36,12 @@ _No unreleased changes._
 
 Initial release of the full Pulse SDK suite — 4 packages covering 8 phases of development:
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| `pulse_dev` | 0.1.0 | Pure Dart core — events, pipeline, sanitization, network, performance, offline queue |
-| `pulse_dev_flutter` | 0.1.0 | Flutter integration — error capture, context, debug inspector |
-| `pulse_dio` | 0.1.0 | Dio interceptor for network monitoring |
-| `pulse_http` | 0.1.0 | `package:http` wrapper for network monitoring |
+| Package             | Version | Description                                                                          |
+|---------------------|---------|--------------------------------------------------------------------------------------|
+| `pulse_dev`         | 0.1.0   | Pure Dart core — events, pipeline, sanitization, network, performance, offline queue |
+| `pulse_dev_flutter` | 0.1.0   | Flutter integration — error capture, context, debug inspector                        |
+| `pulse_dio`         | 0.1.0   | Dio interceptor for network monitoring                                               |
+| `pulse_http`        | 0.1.0   | `package:http` wrapper for network monitoring                                        |
 
 ### pulse_dev
 

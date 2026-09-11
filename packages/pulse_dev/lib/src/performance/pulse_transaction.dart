@@ -33,6 +33,10 @@ abstract interface class PulseTransaction {
   /// may be automatically updated.
   void finish({String? status, Object? error});
 
+  /// Creates a real, reporting [PulseTransaction] backed by [RealPulseTransaction].
+  ///
+  /// Prefer [Pulse.startTransaction] for typical usage; this factory is the
+  /// lower-level constructor used internally and by `pulse_dev_flutter`.
   factory PulseTransaction.create({
     required String name,
     required PulseConfig config,

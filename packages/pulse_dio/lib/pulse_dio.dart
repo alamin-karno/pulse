@@ -20,15 +20,17 @@ class PulseDioInterceptor extends Interceptor {
   /// Holds the start time for each request, keyed by the request object.
   final Map<RequestOptions, DateTime> _startTimes = {};
 
-  /// Creates a [PulseDioInterceptor].
+  /// Creates a [PulseDioInterceptor] that reports requests to [observer].
   PulseDioInterceptor({required this.observer});
 
+  /// Records the start time for [options] before the request is sent.
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     _startTimes[options] = DateTime.now();
     super.onRequest(options, handler);
   }
 
+  /// Captures a successful [response] as a [NetworkEvent].
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     _capture(
@@ -38,6 +40,7 @@ class PulseDioInterceptor extends Interceptor {
     super.onResponse(response, handler);
   }
 
+  /// Captures a failed request ([err]) as a [NetworkEvent].
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     _capture(

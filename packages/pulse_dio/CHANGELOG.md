@@ -1,4 +1,13 @@
+## Unreleased
 
+### Changed
+- Added dartdoc to `PulseDioInterceptor`'s constructor and `onRequest`/`onResponse`/
+  `onError` overrides (previously undocumented).
+- Added `example/example.dart` — needed for pub.dev's per-package example score.
+
+### Removed
+- Deleted `lib/src/pulse_dio_base.dart`, an unused leftover `dart create` template
+  stub that was never exported.
 
 ## 0.1.0
 

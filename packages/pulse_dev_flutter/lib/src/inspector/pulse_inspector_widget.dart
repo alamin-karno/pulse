@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: sort_constructors_first
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +21,10 @@ class PulseInspector extends StatefulWidget {
   /// Whether the inspector floating button is visible.
   final bool enabled;
 
+  /// Creates a [PulseInspector] wrapping [child].
+  ///
+  /// Prefer [PulseInspector.builder] for typical `MaterialApp.builder` usage
+  /// rather than constructing this widget directly.
   const PulseInspector({
     super.key,
     required this.child,
