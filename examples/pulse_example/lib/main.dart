@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,33 +7,36 @@ import 'package:pulse_http/pulse_http.dart';
 
 // ── Bootstrap ────────────────────────────────────────────────────────────────
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  // Run inside a zone so both ensureInitialized and runApp share the same zone,
+  // eliminating the FlutterError "zone mismatch" warning.
+  Pulse.run(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await Pulse.initialize(
-    PulseConfig(
-      dsn: 'https://example-key@ingest.example.com/demo-project',
-      environment: 'development',
-      release: '1.0.0+1',
-      debug: true,
-      transport: _ConsoleTransport(),
-      maxBreadcrumbs: 100,
-      sampleRate: 1.0,
-      network: PulseNetworkConfig(
-        enabled: true,
-        captureHeaders: false,
-        captureBody: false,
-      ),
-      performance: PulsePerformanceConfig(
-        enabled: true,
+    await Pulse.initialize(
+      PulseConfig(
+        dsn: 'https://example-key@ingest.example.com/demo-project',
+        environment: 'development',
+        release: '1.0.0+1',
+        debug: true,
+        transport: _ConsoleTransport(),
+        maxBreadcrumbs: 100,
         sampleRate: 1.0,
-        detectSlowOperations: true,
+        network: const PulseNetworkConfig(
+          enabled: true,
+          captureHeaders: false,
+          captureBody: false,
+        ),
+        performance: const PulsePerformanceConfig(
+          enabled: true,
+          sampleRate: 1.0,
+          detectSlowOperations: true,
+        ),
       ),
-    ),
-  );
+    );
 
-  // Captures all unhandled async errors automatically.
-  Pulse.run(() => runApp(const PulseExampleApp()));
+    runApp(const PulseExampleApp());
+  });
 }
 
 // ── Debug transport ───────────────────────────────────────────────────────────
@@ -49,12 +50,18 @@ final class _ConsoleTransport implements PulseTransport {
     debugPrint('╔══ [Pulse] ${json['type']} ══════════════════════════╗');
     debugPrint('  id        : ${json['id']}');
     debugPrint('  timestamp : ${json['timestamp']}');
-    if (json.containsKey('message'))
+    if (json.containsKey('message')) {
       debugPrint('  message   : ${json['message']}');
-    if (json.containsKey('name')) debugPrint('  name      : ${json['name']}');
-    if (json.containsKey('exception_type'))
+    }
+    if (json.containsKey('name')) {
+      debugPrint('  name      : ${json['name']}');
+    }
+    if (json.containsKey('exception_type')) {
       debugPrint('  exception : ${json['exception_type']}');
-    if (json.containsKey('url')) debugPrint('  url       : ${json['url']}');
+    }
+    if (json.containsKey('url')) {
+      debugPrint('  url       : ${json['url']}');
+    }
     debugPrint('╚═══════════════════════════════════════════════════════╝');
     return PulseTransportResult.success;
   }
@@ -102,47 +109,47 @@ class _HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final demos = [
-      _DemoEntry(
+      const _DemoEntry(
         icon: Icons.error_outline,
         color: Colors.redAccent,
         title: 'Error Capture',
         subtitle: 'Exception, Error, Flutter error, unhandled async',
-        screen: const _ErrorScreen(),
+        screen: _ErrorScreen(),
       ),
-      _DemoEntry(
+      const _DemoEntry(
         icon: Icons.timeline,
         color: Colors.orangeAccent,
         title: 'Breadcrumbs',
         subtitle: 'Record context before a crash',
-        screen: const _BreadcrumbScreen(),
+        screen: _BreadcrumbScreen(),
       ),
-      _DemoEntry(
+      const _DemoEntry(
         icon: Icons.analytics_outlined,
         color: Colors.blueAccent,
         title: 'Custom Events',
         subtitle: 'Track arbitrary events with properties',
-        screen: const _CustomEventScreen(),
+        screen: _CustomEventScreen(),
       ),
-      _DemoEntry(
+      const _DemoEntry(
         icon: Icons.wifi_outlined,
         color: Colors.purpleAccent,
         title: 'Network Monitoring',
         subtitle: 'PulseHttpClient + PulseDioInterceptor',
-        screen: const _NetworkScreen(),
+        screen: _NetworkScreen(),
       ),
-      _DemoEntry(
+      const _DemoEntry(
         icon: Icons.speed_outlined,
         color: Colors.greenAccent,
         title: 'Performance',
         subtitle: 'Transactions, spans, slow operations',
-        screen: const _PerformanceScreen(),
+        screen: _PerformanceScreen(),
       ),
-      _DemoEntry(
+      const _DemoEntry(
         icon: Icons.privacy_tip_outlined,
         color: Colors.tealAccent,
         title: 'Sanitization',
         subtitle: 'See how PII is automatically redacted',
-        screen: const _SanitizationScreen(),
+        screen: _SanitizationScreen(),
       ),
     ];
 
@@ -222,7 +229,7 @@ class _ErrorScreenState extends State<_ErrorScreen> {
     Pulse.addBreadcrumb('User triggered captureException demo',
         category: 'ui.action');
     try {
-      throw FormatException('Simulated FormatException for demo');
+      throw const FormatException('Simulated FormatException for demo');
     } catch (e, st) {
       Pulse.captureException(e, stackTrace: st);
       _log_('✅ captureException: FormatException sent');
@@ -597,7 +604,7 @@ class _PerformanceScreenState extends State<_PerformanceScreen> {
       final span = tx.startSpan('parse_data');
       await Future<void>.delayed(const Duration(milliseconds: 60));
       span.finish();
-      throw FormatException('Malformed CSV data at row 42');
+      throw const FormatException('Malformed CSV data at row 42');
     } catch (e, st) {
       tx.finish(status: 'error', error: e);
       Pulse.captureException(e, stackTrace: st);
