@@ -7,6 +7,8 @@
 [![pub.dev pulse_dev](https://img.shields.io/pub/v/pulse_dev.svg?label=pulse_dev)](https://pub.dev/packages/pulse_dev)
 [![pub.dev pulse_dev_flutter](https://img.shields.io/pub/v/pulse_dev_flutter.svg?label=pulse_dev_flutter)](https://pub.dev/packages/pulse_dev_flutter)
 
+![Pulse SDK Demo](assets/pulse_demo.png)
+
 ---
 
 ## What is Pulse?
