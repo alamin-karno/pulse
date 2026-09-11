@@ -7,15 +7,14 @@
 [![pub.dev pulse_dev](https://img.shields.io/pub/v/pulse_dev.svg?label=pulse_dev)](https://pub.dev/packages/pulse_dev)
 [![pub.dev pulse_dev_flutter](https://img.shields.io/pub/v/pulse_dev_flutter.svg?label=pulse_dev_flutter)](https://pub.dev/packages/pulse_dev_flutter)
 
-![Pulse SDK Demo](assets/pulse_demo.png)
+![Pulse SDK Banner](https://github.com/alamin-karno/pulse/assets/pulse_banner.png)
 
 ---
 
 ## What is Pulse?
 
 Pulse is an open-source developer intelligence SDK for Flutter and Dart applications.
-It provides a unified, privacy-first observability layer that helps you understand
-what is happening in your application without compromising your users' data.
+It provides a unified, privacy-first observability layer that helps you understand what is happening in your application without compromising your users' data.
 
 Pulse is designed to be:
 

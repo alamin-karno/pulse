@@ -19,7 +19,7 @@ _No unreleased changes._
 
 ---
 
-## 0.1.0 — 2026-09-11
+## 0.1.0
 
 ### Highlights
 
