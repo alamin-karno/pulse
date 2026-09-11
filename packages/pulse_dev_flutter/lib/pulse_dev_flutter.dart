@@ -30,10 +30,21 @@ export 'package:pulse_dev/pulse_dev.dart'
         BreadcrumbEvent,
         BreadcrumbLevel,
         CustomEvent,
+        NetworkEvent,
+        TransactionEvent,
+        PulseSpan,
         PulseEventType,
         // Context
         PulseContext,
         PulsePlatform,
+        // Network
+        PulseNetworkConfig,
+        PulseNetworkObserver,
+        // Performance
+        PulsePerformanceConfig,
+        PulseTransaction,
+        // Sanitization
+        PulseSanitizationConfig,
         // Interfaces (for custom implementations)
         PulseTransport,
         PulseTransportResult,

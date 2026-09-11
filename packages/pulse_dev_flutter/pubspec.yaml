@@ -2,12 +2,15 @@ name: pulse_dev_flutter
 description: >-
   Flutter integration for the Pulse Developer Intelligence SDK.
   Provides automatic error capture via FlutterError.onError and
-  runZonedGuarded, Flutter context collection, and the developer-facing
-  Pulse static API.
+  runZonedGuarded, Flutter context collection, performance integrations,
+  offline event queueing, and the in-app Pulse Debug Inspector overlay.
 version: 0.1.0
-repository: https://github.com/pulse-dart/pulse
-homepage: https://github.com/pulse-dart/pulse
-issue_tracker: https://github.com/pulse-dart/pulse/issues
+repository: https://github.com/alamin-karno/pulse
+homepage: https://github.com/alamin-karno/pulse
+issue_tracker: https://github.com/alamin-karno/pulse/issues
+
+funding:
+  - https://github.com/sponsors/alamin-karno
 
 topics:
   - monitoring

@@ -1,16 +1,32 @@
 name: pulse_dio
-description: Dio integration for the Pulse SDK. Automatically captures network requests and sends them to Pulse.
+description: >-
+  Dio interceptor for the Pulse Developer Intelligence SDK.
+  Automatically captures HTTP request/response metrics from package:dio
+  and forwards them to the Pulse event pipeline.
 version: 0.1.0
-publish_to: none
+repository: https://github.com/alamin-karno/pulse
+homepage: https://github.com/alamin-karno/pulse
+issue_tracker: https://github.com/alamin-karno/pulse/issues
+
+funding:
+  - https://github.com/sponsors/alamin-karno
+
+topics:
+  - monitoring
+  - networking
+  - observability
+  - dio
+  - sdk
 
 environment:
-  sdk: ^3.3.0
+  sdk: ">=3.5.0 <4.0.0"
+
+resolution: workspace
 
 dependencies:
   dio: ^5.4.0
-  pulse_dev:
-    path: ../pulse_dev
+  pulse_dev: ^0.1.0
 
 dev_dependencies:
-  lints: ^3.0.0
+  lints: ^4.0.0
   test: ^1.24.0

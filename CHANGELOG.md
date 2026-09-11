@@ -1,6 +1,12 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to the Pulse SDK monorepo are documented here.
+Each package maintains its own detailed changelog:
+
+- [`pulse_dev` CHANGELOG](packages/pulse_dev/CHANGELOG.md)
+- [`pulse_dev_flutter` CHANGELOG](packages/pulse_dev_flutter/CHANGELOG.md)
+- [`pulse_dio` CHANGELOG](packages/pulse_dio/CHANGELOG.md)
+- [`pulse_http` CHANGELOG](packages/pulse_http/CHANGELOG.md)
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -13,74 +19,49 @@ _No unreleased changes._
 
 ---
 
-## 0.1.0 — 2026-09-10
+## 0.1.0 — 2026-09-11
+
+### Highlights
+
+Initial release of the full Pulse SDK suite — 4 packages covering 8 phases of development:
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| `pulse_dev` | 0.1.0 | Pure Dart core — events, pipeline, sanitization, network, performance, offline queue |
+| `pulse_dev_flutter` | 0.1.0 | Flutter integration — error capture, context, debug inspector |
+| `pulse_dio` | 0.1.0 | Dio interceptor for network monitoring |
+| `pulse_http` | 0.1.0 | `package:http` wrapper for network monitoring |
 
 ### pulse_dev
 
-**Added**
-
-- `PulseEvent` sealed base class with full serialization contract (`toJson`)
-- `ErrorEvent`, `ExceptionEvent`, `BreadcrumbEvent`, `CustomEvent`, `NetworkEvent`, `TransactionEvent` event types
-- `PulseEventType` enum for event categorization
-- `PulseContext` immutable device/app metadata carrier
-- `PulseConfig` immutable configuration value object with DSN validation
-- `PulsePerformanceConfig` for sampling and slow operation thresholds
-- `PulseTransport` abstract interface for pluggable event delivery
-- `PulseTransportResult` enum to report delivery status (success, retryable, permanent)
-- `NoOpTransport` default no-operation transport for development/testing
-- `PulseStorage` abstract interface for offline queuing storage
-- `InMemoryPulseStorage` memory-backed storage implementation
-- `EventQueue` coordinating storage, backoff, and transport delivery
-- `PulseSanitizer` abstract interface for privacy-preserving event sanitization
+- Event system with 6 typed event types (`ErrorEvent`, `ExceptionEvent`, `BreadcrumbEvent`, `CustomEvent`, `NetworkEvent`, `TransactionEvent`)
+- Composable `EventPipeline` with processors → sanitizer → transport
 - `DefaultSanitizer` with recursive redaction of 20+ sensitive key patterns
-- `EventProcessor` abstract interface for composable event enrichment/filtering
-- `SanitizingProcessor` convenience processor wrapping a `PulseSanitizer`
-- `EventPipeline` orchestrating: processors → sanitizer → transport with error isolation
-- `BreadcrumbBuffer` fixed-capacity ring buffer (configurable, default 100)
-- `PulseLogger` abstract interface for SDK-internal diagnostics
-- `NoOpLogger` default no-operation logger
-- `Clock` interface and `SystemClock` production implementation
-- `IdGenerator` interface and `UuidGenerator` UUID v4 implementation
-- `PulseNetworkConfig` and `PulseNetworkObserver` for HTTP request/response metric capturing
-- `PulsePlatform` string constants for standard platform identifiers
-- `PulseTransaction`, `ActivePulseSpan`, and `PulseSpan` for performance measurement
-- `PulseEventObserver` interface for subscribing to telemetry events globally
-- `kPulseSdkVersion` SDK version constant
+- `PulseNetworkObserver` for framework-agnostic network monitoring
+- `PulseTransaction` and `PulseSpan` for performance instrumentation
+- `EventQueue` with FIFO ordering, exponential backoff, and event expiration
+- `PulseEventObserver` for telemetry subscription
 
 ### pulse_dev_flutter
 
-**Added**
-
-- `Pulse` static facade with `initialize`, `captureException`, `captureError`,
-  `addBreadcrumb`, `track`, `run`, `close`, `startTransaction`, and `isInitialized`
-- `Pulse.network` static getter for exposing `PulseNetworkObserver` to adapter packages
-- `PulseClient` internal stateful coordinator
-- `FlutterPerformanceIntegration` capturing application startup time and slow UI operations
-- `FlutterErrorIntegration` hooking `FlutterError.onError` (chains previous handler)
-- `ZoneErrorIntegration` providing `runZonedGuarded`-based unhandled error capture
-- `FlutterContextCollector` populating `PulseContext` from Flutter platform APIs
-- `PulseInspector` overlay widget for in-app debug access to SDK telemetry
-- `InspectorState` in-memory telemetry ring buffer for `PulseInspector`
-- `pulse_example` reference Flutter application
+- `Pulse` static facade — `initialize`, `captureException`, `captureError`, `addBreadcrumb`, `track`, `startTransaction`, `run`
+- `FlutterErrorIntegration` — hooks `FlutterError.onError` without breaking existing handlers
+- `ZoneErrorIntegration` — captures unhandled async errors via `runZonedGuarded`
+- `FlutterPerformanceIntegration` — startup time and slow frame detection
+- `FlutterContextCollector` — platform device context collection
+- `PulseInspector` — in-app debug overlay (development-only, zero cost in release)
 
 ### pulse_dio
 
-**Added**
-
-- `PulseDioInterceptor` for automatic `package:dio` network request capture
+- `PulseDioInterceptor` — automatic Dio HTTP monitoring with configurable redaction
 
 ### pulse_http
 
-**Added**
-
-- `PulseHttpClient` for automatic `package:http` network request capture
+- `PulseHttpClient` — drop-in `BaseClient` wrapper for `package:http` monitoring
 
 ### Infrastructure
 
-**Added**
-
-- Melos monorepo with scripted format, analyze, test, and publish-dry-run
-- Dart Pub Workspace root configuration
-- GitHub Actions CI (format · analyze · test on every push and PR)
-- GitHub Actions publish dry-run validation
+- Dart Pub Workspace monorepo with Melos scripting
+- GitHub Actions CI — format, analyze, test all packages on every push and PR
+- `dart pub publish --dry-run` validation step in CI
 - Full architecture documentation in `docs/architecture.md`

@@ -7,4 +7,6 @@ environment:
 workspace:
   - packages/pulse_dev
   - packages/pulse_dev_flutter
+  - packages/pulse_dio
+  - packages/pulse_http
   - examples/pulse_example
