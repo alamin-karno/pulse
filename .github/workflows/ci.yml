@@ -153,6 +153,8 @@ jobs:
           channel: stable
       - name: Install dependencies
         run: flutter pub get
+      - name: Reset git state
+        run: git restore .
       - name: Dry-run — pulse_dev
         working-directory: packages/pulse_dev
         run: dart pub publish --dry-run
