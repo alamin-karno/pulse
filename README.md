@@ -7,7 +7,7 @@
 [![pub.dev pulse_dev](https://img.shields.io/pub/v/pulse_dev.svg?label=pulse_dev)](https://pub.dev/packages/pulse_dev)
 [![pub.dev pulse_dev_flutter](https://img.shields.io/pub/v/pulse_dev_flutter.svg?label=pulse_dev_flutter)](https://pub.dev/packages/pulse_dev_flutter)
 
-![Pulse SDK Banner](assets/pulse_banner.png)
+![Pulse SDK Banner](https://github.com/alamin-karno/pulse/blob/main/assets/pulse_banner.png?raw=true)
 
 ---
 
