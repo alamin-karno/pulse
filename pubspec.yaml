@@ -10,3 +10,73 @@ workspace:
   - packages/pulse_dio
   - packages/pulse_http
   - examples/pulse_example
+
+dev_dependencies:
+  melos: ^8.7.0
+
+# Melos 7+ reads its config from here; the package list comes from `workspace:`.
+melos:
+  scripts:
+    # ── Formatting ────────────────────────────────────────────────────────────
+    format:
+      exec:
+        command: dart format .
+        orderDependents: true
+      description: Format all packages.
+
+    format:check:
+      exec:
+        command: dart format --set-exit-if-changed .
+        orderDependents: true
+      description: Verify formatting is correct across all packages (CI).
+
+    # ── Analysis ──────────────────────────────────────────────────────────────
+    analyze:
+      exec:
+        command: dart analyze --fatal-infos .
+        orderDependents: true
+      description: Run static analysis across all packages.
+
+    analyze:flutter:
+      exec:
+        command: flutter analyze
+        orderDependents: true
+      packageFilters:
+        flutter: true
+      description: Run Flutter static analysis across Flutter packages.
+
+    # ── Testing ───────────────────────────────────────────────────────────────
+    test:
+      exec:
+        command: dart test
+        orderDependents: true
+      packageFilters:
+        flutter: false
+      description: Run unit tests for pure Dart packages.
+
+    test:flutter:
+      exec:
+        command: flutter test
+        orderDependents: true
+      packageFilters:
+        flutter: true
+      description: Run Flutter tests for Flutter packages.
+
+    # ── Publishing validation ─────────────────────────────────────────────────
+    publish:dry:
+      exec:
+        command: dart pub publish --dry-run
+        orderDependents: true
+      packageFilters:
+        published: true
+      description: Validate all publishable packages pass pub.dev checks.
+
+    # ── Combined checks ───────────────────────────────────────────────────────
+    check:
+      run: >
+        melos run format:check &&
+        melos run analyze &&
+        melos run analyze:flutter &&
+        melos run test &&
+        melos run test:flutter
+      description: Full pre-commit/pre-merge check suite.

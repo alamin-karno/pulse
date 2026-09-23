@@ -12,7 +12,7 @@ memory of any past conversation.
 
 ## Current state (keep this section accurate — update it when phases/packages change)
 
-- **Monorepo**, managed with **melos** (`melos.yaml`), 4 published packages + 1 example app.
+- **Monorepo**, managed with **melos** 8+ (config under the `melos:` key in the root `pubspec.yaml`), 4 published packages + 1 example app.
 - **Phases 0–8 are implemented** (architecture → foundation → event system → error
   capture → privacy/sanitization → network intelligence → performance → offline queue →
   debug inspector). See `docs/ROADMAP.md` for the full phase list and what's genuinely
