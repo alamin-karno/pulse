@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Post-release pub.dev score and code-quality pass across all 4 packages (no public API
 changes). See each package's own CHANGELOG for details.
 
+### CI
+
+- Fixed the scheduled `Validate Packages` dry-run failing with "1 checked-in file is
+  modified in git". Flutter 3.47+ auto-migrates `analysis_options.yaml` during
+  `flutter pub get` (adds `analyzer.exclude` for `build/**` and platform dirs). The
+  migrated excludes are now committed for `pulse_dev_flutter` and `pulse_example`,
+  and every workflow that publishes or dry-runs now restores tooling-modified tracked
+  files first, with a `::warning::` annotation showing the diff.
+
 - Added a per-package `example/` so pub.dev scores each package's own usage example.
 - Shortened `pulse_dev`, `pulse_dev_flutter`, and `pulse_http` pubspec descriptions to
   fit pub.dev's 60–180 character guidance.

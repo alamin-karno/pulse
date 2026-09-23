@@ -20,6 +20,18 @@ jobs:
       - name: Install dependencies
         working-directory: packages/pulse_dev
         run: flutter pub get
+      - name: Discard tooling-generated changes
+        # Newer Flutter releases auto-migrate tracked files during `pub get`
+        # (e.g. adding analyzer excludes to analysis_options.yaml). pub's
+        # publish validator warns on any modified tracked file, which fails
+        # the run. Surface the drift as a warning, then publish from the
+        # committed state. If this warns, commit the migrated file locally.
+        run: |
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            echo "::warning::Tooling modified tracked files — commit the migrated versions:"
+            git --no-pager diff
+            git restore .
+          fi
       - name: Dry-run publish
         working-directory: packages/pulse_dev
         run: dart pub publish --dry-run
@@ -35,6 +47,18 @@ jobs:
       - name: Install dependencies
         working-directory: packages/pulse_dev_flutter
         run: flutter pub get
+      - name: Discard tooling-generated changes
+        # Newer Flutter releases auto-migrate tracked files during `pub get`
+        # (e.g. adding analyzer excludes to analysis_options.yaml). pub's
+        # publish validator warns on any modified tracked file, which fails
+        # the run. Surface the drift as a warning, then publish from the
+        # committed state. If this warns, commit the migrated file locally.
+        run: |
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            echo "::warning::Tooling modified tracked files — commit the migrated versions:"
+            git --no-pager diff
+            git restore .
+          fi
       - name: Dry-run publish
         working-directory: packages/pulse_dev_flutter
         run: dart pub publish --dry-run
