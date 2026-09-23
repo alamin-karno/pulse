@@ -6,7 +6,7 @@ is a short pointer for agent tools that don't load `CLAUDE.md` automatically; do
 detailed rules here, keep it in sync by reference only.
 
 - Before pushing any code, always run the CI checks locally: `melos run check` (format,
-  analyze, analyze:flutter, test, test:flutter — see `melos.yaml`).
+  analyze, analyze:flutter, test, test:flutter — see the `melos:` section of the root `pubspec.yaml`).
 - When implementing a new feature, update the `CHANGELOG.md`, `README.md`, and any other
   related documentation files to reflect the changes, in every package touched.
 - Cloud/backend work (ingestion API, dashboard, feature flags) is intentionally deferred

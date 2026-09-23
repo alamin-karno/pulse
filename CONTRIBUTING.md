@@ -11,7 +11,7 @@ from the community and appreciate your time and effort.
 
 - [Dart SDK](https://dart.dev/get-dart) `>=3.5.0`
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel)
-- [Melos](https://melos.invertase.dev/) — install via:
+- [Melos](https://melos.invertase.dev/) 8+ (config lives in the root `pubspec.yaml`) — install via:
   ```bash
   dart pub global activate melos
   ```

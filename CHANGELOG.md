@@ -27,6 +27,13 @@ changes). See each package's own CHANGELOG for details.
   and every workflow that publishes or dry-runs now restores tooling-modified tracked
   files first, with a `::warning::` annotation showing the diff.
 
+### Tooling
+
+- Migrated the Melos config from `melos.yaml` to the `melos:` key of the root
+  `pubspec.yaml` (required since Melos 7; the package list now comes from pub's
+  `workspace:`), converted scripts to Melos 8's `exec.command` syntax, and added
+  `melos` as a root dev dependency. `melos run …` works again.
+
 - Added a per-package `example/` so pub.dev scores each package's own usage example.
 - Shortened `pulse_dev`, `pulse_dev_flutter`, and `pulse_http` pubspec descriptions to
   fit pub.dev's 60–180 character guidance.
