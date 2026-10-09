@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version-file: .fvmrc
       - name: Install dependencies
         working-directory: packages/pulse_dev
         run: flutter pub get
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version-file: .fvmrc
       - name: Install dependencies
         working-directory: packages/pulse_dev_flutter
         run: flutter pub get
