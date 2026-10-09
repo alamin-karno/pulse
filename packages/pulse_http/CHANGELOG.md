@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.1
 
 ### Changed
 - Shortened the `pubspec.yaml` description to fit pub.dev's 60–180 character guidance.

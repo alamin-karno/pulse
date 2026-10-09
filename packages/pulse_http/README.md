@@ -26,8 +26,8 @@ request and response metrics and forwards them to the Pulse event pipeline.
 
 ```yaml
 dependencies:
-  pulse_dev_flutter: ^0.1.0   # or pulse_dev for pure Dart
-  pulse_http: ^0.1.0
+  pulse_dev_flutter: ^0.1.1   # or pulse_dev for pure Dart
+  pulse_http: ^0.1.1
   http: ^1.2.0
 ```
 

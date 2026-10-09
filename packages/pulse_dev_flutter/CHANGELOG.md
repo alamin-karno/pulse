@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.1
 
 ### Fixed
 - `FlutterContextCollector` no longer imports `dart:io`, which previously broke
