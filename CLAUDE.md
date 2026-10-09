@@ -72,6 +72,11 @@ each session.
 
 ## Required checks before considering work done
 
+The Flutter version is pinned in `.fvmrc` (CI reads it via `flutter-version-file`). Run
+these through FVM so melos and every `dart`/`flutter` it spawns use the pinned SDK —
+e.g. `fvm exec dart run melos run test`. Change the version with `fvm use <version>`,
+which updates local and CI together.
+
 ```bash
 melos run format:check
 melos run analyze
