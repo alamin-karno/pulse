@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Unreleased
+
+### Tooling
+
+- `dev` is now the repository's default branch; `CONTRIBUTING.md` documents it.
+
+---
+
 ## 0.1.1
 
 Post-release pub.dev score and code-quality pass across all 4 packages (no public API
