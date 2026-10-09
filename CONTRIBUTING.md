@@ -102,7 +102,8 @@ melos run publish:dry
 4. Ensure all checks pass: `melos run check`
 5. Update `CHANGELOG.md` under `## Unreleased`
 6. Add or update documentation comments for any public API changes
-7. Submit a PR against **`dev`** (not `main`)
+7. Submit a PR against **`dev`** (not `main`) — `dev` is the default branch, so GitHub
+   targets it automatically
 
 ---
 
@@ -111,6 +112,11 @@ melos run publish:dry
 Pulse uses [git flow](https://nvie.com/posts/a-successful-git-branching-model/).
 `main` and `dev` are protected: no direct pushes, no deletion — everything lands via a
 pull request with passing CI.
+
+**`dev` is the repository's default branch.** It holds the latest integrated (possibly
+unreleased) work: clones check it out, and new pull requests target it by default.
+`main` only moves on a release or hotfix and always matches what's published on
+pub.dev — check out `main` (or a release tag) if you need the released code.
 
 | Branch               | Branches from | Merges into              | Merge method |
 |----------------------|---------------|--------------------------|--------------|
@@ -128,7 +134,9 @@ PRs use merge commits (not squash) so `main` and `dev` keep a shared history.
 2. On the release branch: bump `version:` in each changed package's `pubspec.yaml`, and
    rename every `## Unreleased` changelog heading (root + packages) to the version.
    The `Branch policy` check rejects a release PR that still has an `Unreleased` section.
-3. Run `melos run check` and `melos run publish:dry`, then open a PR into `main`.
+3. Run `melos run check` and `melos run publish:dry`, then open a PR into `main` —
+   change the PR's base from the default `dev` to `main`
+   (`gh pr create --base main`).
 4. After it merges, tag `main` once per released package — `<package>-v<version>`, e.g.
    `pulse_dev-v0.1.1` — and push the tags. Each tag publishes that package to pub.dev
    via the `Publish to pub.dev` workflow (OIDC, no stored secrets). Create a GitHub
