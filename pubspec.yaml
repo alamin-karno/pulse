@@ -74,9 +74,9 @@ melos:
     # ── Combined checks ───────────────────────────────────────────────────────
     check:
       run: >
-        melos run format:check &&
-        melos run analyze &&
-        melos run analyze:flutter &&
-        melos run test &&
-        melos run test:flutter
+        dart run melos run format:check &&
+        dart run melos run analyze &&
+        dart run melos run analyze:flutter &&
+        dart run melos run test &&
+        dart run melos run test:flutter
       description: Full pre-commit/pre-merge check suite.

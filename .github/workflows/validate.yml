@@ -1,24 +1,27 @@
 name: Validate Packages
 
+# Weekly drift check: catches pub.dev / SDK / dependency changes that break
+# publishing even when no code changed. PRs are already dry-run by ci.yml.
 on:
-  pull_request:
-    branches: [main]
   schedule:
     # Run weekly on Mondays at 08:00 UTC
     - cron: "0 8 * * 1"
   workflow_dispatch:
 
 jobs:
-  validate_core:
-    name: Publish dry-run (pulse_dev)
+  validate:
+    name: Publish dry-run (${{ matrix.package }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [pulse_dev, pulse_dev_flutter, pulse_http, pulse_dio]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           flutter-version-file: .fvmrc
       - name: Install dependencies
-        working-directory: packages/pulse_dev
         run: flutter pub get
       - name: Discard tooling-generated changes
         # Newer Flutter releases auto-migrate tracked files during `pub get`
@@ -33,32 +36,5 @@ jobs:
             git restore .
           fi
       - name: Dry-run publish
-        working-directory: packages/pulse_dev
-        run: dart pub publish --dry-run
-
-  validate_flutter:
-    name: Publish dry-run (pulse_dev_flutter)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: .fvmrc
-      - name: Install dependencies
-        working-directory: packages/pulse_dev_flutter
-        run: flutter pub get
-      - name: Discard tooling-generated changes
-        # Newer Flutter releases auto-migrate tracked files during `pub get`
-        # (e.g. adding analyzer excludes to analysis_options.yaml). pub's
-        # publish validator warns on any modified tracked file, which fails
-        # the run. Surface the drift as a warning, then publish from the
-        # committed state. If this warns, commit the migrated file locally.
-        run: |
-          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-            echo "::warning::Tooling modified tracked files — commit the migrated versions:"
-            git --no-pager diff
-            git restore .
-          fi
-      - name: Dry-run publish
-        working-directory: packages/pulse_dev_flutter
+        working-directory: packages/${{ matrix.package }}
         run: dart pub publish --dry-run

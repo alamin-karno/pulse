@@ -1,0 +1,52 @@
+name: Branch Policy
+
+# Enforces the git flow branching model on pull requests:
+#   feature/*, bugfix/*, chore/*, docs/*, ci/*, … → dev
+#   release/x.y.z, hotfix/*                        → main
+#   main                                           → dev   (post-release back-merge)
+# and that a release PR into main carries finalized changelogs.
+on:
+  pull_request:
+    branches: [dev, main]
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  branch_policy:
+    name: Branch policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source → target branch
+        env:
+          HEAD: ${{ github.head_ref }}
+          BASE: ${{ github.base_ref }}
+        run: |
+          echo "PR: $HEAD → $BASE"
+          case "$BASE" in
+            main)
+              case "$HEAD" in
+                release/[0-9]*.[0-9]*.[0-9]*|hotfix/*) ;;
+                *)
+                  echo "::error::Only release/x.y.z and hotfix/* branches may merge into main (got '$HEAD'). Target dev instead."
+                  exit 1 ;;
+              esac ;;
+            dev)
+              case "$HEAD" in
+                main|feature/*|bugfix/*|fix/*|chore/*|docs/*|ci/*|refactor/*|test/*|release/*|hotfix/*|dependabot/*) ;;
+                *)
+                  echo "::error::Branch '$HEAD' doesn't follow the naming convention (feature/*, bugfix/*, chore/*, docs/*, ci/*, refactor/*, test/*)."
+                  exit 1 ;;
+              esac ;;
+          esac
+
+      - uses: actions/checkout@v4
+        if: github.base_ref == 'main'
+
+      - name: Check changelogs are finalized for release
+        if: github.base_ref == 'main'
+        run: |
+          # A release must not ship an "Unreleased" section — rename it to the
+          # version being released.
+          if grep -n -i '^## \[\?Unreleased' CHANGELOG.md packages/*/CHANGELOG.md; then
+            echo "::error::Rename the '## Unreleased' section(s) above to the release version before merging into main."
+            exit 1
+          fi
