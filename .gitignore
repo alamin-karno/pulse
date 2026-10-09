@@ -83,3 +83,6 @@ melos_*.yaml
 
 # OS
 Thumbs.db
+
+# FVM Version Cache
+.fvm/
