@@ -3,7 +3,7 @@ description: >-
   Dio interceptor for the Pulse Developer Intelligence SDK.
   Automatically captures HTTP request/response metrics from package:dio
   and forwards them to the Pulse event pipeline.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/alamin-karno/pulse
 homepage: https://github.com/alamin-karno/pulse
 issue_tracker: https://github.com/alamin-karno/pulse/issues

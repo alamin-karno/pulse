@@ -13,10 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## Unreleased
+## 0.1.1
 
 Post-release pub.dev score and code-quality pass across all 4 packages (no public API
-changes). See each package's own CHANGELOG for details.
+changes). Released as `pulse_dev` 0.1.1, `pulse_dev_flutter` 0.1.1, `pulse_http` 0.1.1
+and `pulse_dio` 0.1.1. See each package's own CHANGELOG for details.
 
 ### CI
 

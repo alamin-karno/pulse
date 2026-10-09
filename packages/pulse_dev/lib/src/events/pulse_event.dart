@@ -19,7 +19,7 @@ const String kPulseEventSchemaVersion = '1';
 /// The current version of the Pulse SDK.
 ///
 /// Embedded in every event for diagnostics and compatibility checking.
-const String kPulseSdkVersion = '0.1.0';
+const String kPulseSdkVersion = '0.1.1';
 
 /// Base class for all Pulse SDK events.
 ///

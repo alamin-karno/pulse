@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.1
 
 ### Changed
 - Added dartdoc to `PulseDioInterceptor`'s constructor and `onRequest`/`onResponse`/
