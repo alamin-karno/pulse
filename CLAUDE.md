@@ -65,6 +65,19 @@ Follow the phase discipline this project was built with — don't collapse it:
 5. Report what changed and what's still open. **Do not silently cascade into the next
    phase or an unrelated package.**
 
+## Branching (git flow)
+
+`main` and `dev` are protected — no direct pushes; everything goes through a PR.
+
+- `feature/*`, `bugfix/*`, `docs/*`, `chore/*`, `ci/*` branch from `dev` and PR into
+  `dev` (squash merge).
+- Releases: `release/x.y.z` from `dev` → bump versions, rename `## Unreleased` changelog
+  headings to the version → PR into `main` (merge commit) → tag `<package>-v<version>`
+  on `main` per released package (each tag publishes via OIDC) → back-merge PR `main` →
+  `dev` (merge commit).
+- `hotfix/*` branches from `main`, PRs into `main`, then back-merges into `dev`.
+- Full table, CI trigger matrix, and release steps: `CONTRIBUTING.md` → *Branching model*.
+
 For any new SDK feature, new package, or pub.dev-readiness work, use the
 `pulse-sdk-development` skill — it encodes the full checklist (public API rules, event
 model rules, docs/example/pubspec requirements) so this doesn't have to be re-derived

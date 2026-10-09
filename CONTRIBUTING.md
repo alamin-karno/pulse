@@ -24,7 +24,7 @@ from the community and appreciate your time and effort.
 
 ```bash
 # Clone the repository
-git clone https://github.com/pulse-dart/pulse.git
+git clone https://github.com/alamin-karno/pulse.git
 cd pulse
 
 # Bootstrap the monorepo (installs dependencies and links packages)
@@ -83,25 +83,66 @@ melos run publish:dry
 
 ### Bug Reports
 
-- Use [GitHub Issues](https://github.com/pulse-dart/pulse/issues)
+- Use [GitHub Issues](https://github.com/alamin-karno/pulse/issues)
 - Include: Dart/Flutter version, minimal reproduction, expected vs actual behavior
 - Label: `bug`
 
 ### Feature Requests
 
-- Open a [GitHub Discussion](https://github.com/pulse-dart/pulse/discussions) first
-  for significant new features
-- For small additions, open an issue with label `enhancement`
+- Open a [GitHub Issue](https://github.com/alamin-karno/pulse/issues) with label
+  `enhancement` — for significant new features, describe the proposal there before
+  writing code
 
 ### Pull Requests
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/my-feature`
+2. Branch off `dev`: `git checkout dev && git checkout -b feature/my-feature`
+   (or `bugfix/…`, `docs/…`, `chore/…`, `ci/…` — see [Branching model](#branching-model))
 3. Make your changes
 4. Ensure all checks pass: `melos run check`
 5. Update `CHANGELOG.md` under `## Unreleased`
 6. Add or update documentation comments for any public API changes
-7. Submit a PR against `main`
+7. Submit a PR against **`dev`** (not `main`)
+
+---
+
+## Branching model
+
+Pulse uses [git flow](https://nvie.com/posts/a-successful-git-branching-model/).
+`main` and `dev` are protected: no direct pushes, no deletion — everything lands via a
+pull request with passing CI.
+
+| Branch               | Branches from | Merges into              | Merge method |
+|----------------------|---------------|--------------------------|--------------|
+| `feature/*`, `bugfix/*`, `docs/*`, `chore/*`, `ci/*`, `refactor/*`, `test/*` | `dev` | `dev` | Squash |
+| `release/x.y.z`      | `dev`         | `main`                   | Merge commit |
+| `hotfix/*`           | `main`        | `main`                   | Merge commit |
+| `main` (back-merge)  | —             | `dev`                    | Merge commit |
+
+The `Branch policy` check enforces these source → target rules. Release and back-merge
+PRs use merge commits (not squash) so `main` and `dev` keep a shared history.
+
+### Releasing (maintainers)
+
+1. Cut `release/x.y.z` from `dev`.
+2. On the release branch: bump `version:` in each changed package's `pubspec.yaml`, and
+   rename every `## Unreleased` changelog heading (root + packages) to the version.
+   The `Branch policy` check rejects a release PR that still has an `Unreleased` section.
+3. Run `melos run check` and `melos run publish:dry`, then open a PR into `main`.
+4. After it merges, tag `main` once per released package — `<package>-v<version>`, e.g.
+   `pulse_dev-v0.1.1` — and push the tags. Each tag publishes that package to pub.dev
+   via the `Publish to pub.dev` workflow (OIDC, no stored secrets). Create a GitHub
+   Release for the release.
+5. Open a PR from `main` into `dev` to back-merge the release.
+
+### What CI runs, and when
+
+| Workflow          | Trigger                                        | Runs                                                        |
+|-------------------|------------------------------------------------|-------------------------------------------------------------|
+| `CI`              | PR into `dev`/`main`; push to `dev`/`main`     | Format, analyze, test (all packages), publish dry-run       |
+| `Branch Policy`   | PR into `dev`/`main`                           | Source → target branch rules; finalized changelogs for `main` |
+| `Publish to pub.dev` | Push of a `<package>-v<version>` tag        | Verifies tag is on `main` and matches pubspec + changelog, dry-run, publish |
+| `Validate Packages` | Weekly (Mon 08:00 UTC), manual               | Publish dry-run of every package (catches SDK/pub drift)    |
 
 ### Documentation
 

@@ -1,66 +1,84 @@
 name: Publish to pub.dev
 
+# Packages are versioned independently, so each package is released by its own
+# tag: <package>-v<version>, e.g. `pulse_dev-v0.1.1`. Push tags only for commits
+# on `main` (after the release/* PR has merged). pub.dev's automated publishing
+# for each package must be configured with the tag pattern `<package>-v{{version}}`.
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
-      - '*v[0-9]+.[0-9]+.[0-9]+*' # For package-specific tags e.g. pulse_dev-v1.0.0
+      - 'pulse_dev-v[0-9]+.[0-9]+.[0-9]+*'
+      - 'pulse_dev_flutter-v[0-9]+.[0-9]+.[0-9]+*'
+      - 'pulse_http-v[0-9]+.[0-9]+.[0-9]+*'
+      - 'pulse_dio-v[0-9]+.[0-9]+.[0-9]+*'
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  publish_dry_run:
-    name: Publish dry-run
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: .fvmrc
-      - name: Install dependencies
-        run: flutter pub get
-      - name: Discard tooling-generated changes
-        # Newer Flutter releases auto-migrate tracked files during `pub get`
-        # (e.g. adding analyzer excludes to analysis_options.yaml). pub's
-        # publish validator warns on any modified tracked file, which fails
-        # the run. Surface the drift as a warning, then publish from the
-        # committed state. If this warns, commit the migrated file locally.
-        run: |
-          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-            echo "::warning::Tooling modified tracked files — commit the migrated versions:"
-            git --no-pager diff
-            git restore .
-          fi
-      - name: Dry-run — pulse_dev
-        working-directory: packages/pulse_dev
-        run: dart pub publish --dry-run
-      - name: Dry-run — pulse_dev_flutter
-        working-directory: packages/pulse_dev_flutter
-        run: dart pub publish --dry-run
-      - name: Dry-run — pulse_dio
-        working-directory: packages/pulse_dio
-        run: dart pub publish --dry-run
-      - name: Dry-run — pulse_http
-        working-directory: packages/pulse_http
-        run: dart pub publish --dry-run
-
   publish:
-    name: Publish Packages
-    needs: publish_dry_run
+    name: Publish ${{ github.ref_name }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write # Required for pub.dev OIDC authentication
       contents: read
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - name: Resolve package and version from tag
+        id: tag
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          PKG="${TAG%-v*}"
+          VERSION="${TAG##*-v}"
+          DIR="packages/$PKG"
+          if [ ! -f "$DIR/pubspec.yaml" ]; then
+            echo "::error::Tag '$TAG' doesn't match a package under packages/."
+            exit 1
+          fi
+          {
+            echo "package=$PKG"
+            echo "version=$VERSION"
+            echo "dir=$DIR"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag is on main
+        run: |
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points at a commit that isn't on main. Release via a release/* PR into main first."
+            exit 1
+          fi
+
+      - name: Verify pubspec version matches tag
+        env:
+          DIR: ${{ steps.tag.outputs.dir }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          PUBSPEC_VERSION="$(grep -m1 '^version:' "$DIR/pubspec.yaml" | awk '{print $2}')"
+          if [ "$PUBSPEC_VERSION" != "$VERSION" ]; then
+            echo "::error::Tag version $VERSION != $DIR/pubspec.yaml version $PUBSPEC_VERSION."
+            exit 1
+          fi
+          if grep -q -i '^## \[\?Unreleased' "$DIR/CHANGELOG.md"; then
+            echo "::error::$DIR/CHANGELOG.md still has an Unreleased section."
+            exit 1
+          fi
+          if ! grep -q "^## \[\?$VERSION" "$DIR/CHANGELOG.md"; then
+            echo "::error::$DIR/CHANGELOG.md has no '## $VERSION' entry."
+            exit 1
+          fi
+
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version-file: .fvmrc
-      
+
       - name: Install dependencies
         run: flutter pub get
+
       - name: Discard tooling-generated changes
         # Newer Flutter releases auto-migrate tracked files during `pub get`
         # (e.g. adding analyzer excludes to analysis_options.yaml). pub's
@@ -74,19 +92,21 @@ jobs:
             git restore .
           fi
 
-      # Publish each package. Pub.dev automatically skips if the version is already published.
-      - name: Publish pulse_dev
-        working-directory: packages/pulse_dev
-        run: dart pub publish --force
+      - name: Dry-run
+        working-directory: ${{ steps.tag.outputs.dir }}
+        run: dart pub publish --dry-run
 
-      - name: Publish pulse_dev_flutter
-        working-directory: packages/pulse_dev_flutter
-        run: dart pub publish --force
+      - name: Authenticate with pub.dev (OIDC)
+        # subosito/flutter-action doesn't configure pub.dev credentials, so
+        # exchange the GitHub OIDC token for pub.dev the same way
+        # dart-lang/setup-dart does.
+        run: |
+          TOKEN="$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://pub.dev" | jq -r '.value')"
+          echo "::add-mask::$TOKEN"
+          echo "PUB_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+          dart pub token add https://pub.dev --env-var PUB_TOKEN
 
-      - name: Publish pulse_dio
-        working-directory: packages/pulse_dio
-        run: dart pub publish --force
-
-      - name: Publish pulse_http
-        working-directory: packages/pulse_http
+      - name: Publish
+        working-directory: ${{ steps.tag.outputs.dir }}
         run: dart pub publish --force

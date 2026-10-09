@@ -8,6 +8,8 @@ detailed rules here, keep it in sync by reference only.
 - Before pushing any code, always run the CI checks locally: `melos run check` (format,
   analyze, analyze:flutter, test, test:flutter — see the `melos:` section of the root `pubspec.yaml`).
   Use the Flutter version pinned in `.fvmrc` via FVM: `fvm exec dart run melos run check`.
+- Git flow: branch from `dev` and PR into `dev`; only `release/*`/`hotfix/*` PR into
+  `main`. See `CLAUDE.md` → *Branching (git flow)*.
 - When implementing a new feature, update the `CHANGELOG.md`, `README.md`, and any other
   related documentation files to reflect the changes, in every package touched.
 - Cloud/backend work (ingestion API, dashboard, feature flags) is intentionally deferred
