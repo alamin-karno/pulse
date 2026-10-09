@@ -10,7 +10,11 @@ from the community and appreciate your time and effort.
 ### Prerequisites
 
 - [Dart SDK](https://dart.dev/get-dart) `>=3.5.0`
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) — the exact version is
+  pinned in `.fvmrc` (CI reads the same file). We recommend [FVM](https://fvm.app/):
+  ```bash
+  fvm install   # installs the version pinned in .fvmrc
+  ```
 - [Melos](https://melos.invertase.dev/) 8+ (config lives in the root `pubspec.yaml`) — install via:
   ```bash
   dart pub global activate melos
@@ -26,6 +30,11 @@ cd pulse
 # Bootstrap the monorepo (installs dependencies and links packages)
 melos bootstrap
 ```
+
+> **Using FVM?** Run melos through `fvm exec` so it and every `dart`/`flutter` command
+> it spawns use the pinned SDK instead of whatever is on your `PATH`:
+> `fvm exec dart run melos bootstrap`, `fvm exec dart run melos run check`, etc.
+> Point your IDE's Flutter SDK path at `.fvm/flutter_sdk`.
 
 ### Verify your setup
 

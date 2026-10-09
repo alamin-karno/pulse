@@ -29,6 +29,9 @@ changes). See each package's own CHANGELOG for details.
 
 ### Tooling
 
+- Pinned Flutter 3.47.6 via FVM (`.fvmrc`); every CI workflow now reads the version
+  from `.fvmrc` instead of floating on the latest stable channel. `CONTRIBUTING.md`
+  documents running melos via `fvm exec dart run melos …`.
 - Migrated the Melos config from `melos.yaml` to the `melos:` key of the root
   `pubspec.yaml` (required since Melos 7; the package list now comes from pub's
   `workspace:`), converted scripts to Melos 8's `exec.command` syntax, and added
