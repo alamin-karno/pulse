@@ -3,7 +3,7 @@ description: >-
   package:http client wrapper for the Pulse Developer Intelligence SDK.
   Captures HTTP request/response metrics and forwards them to the Pulse
   event pipeline.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/alamin-karno/pulse
 homepage: https://github.com/alamin-karno/pulse
 issue_tracker: https://github.com/alamin-karno/pulse/issues

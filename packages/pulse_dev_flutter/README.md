@@ -28,7 +28,7 @@ and exposes the `Pulse` static façade — the single entry point for all SDK fe
 
 ```yaml
 dependencies:
-  pulse_dev_flutter: ^0.1.0
+  pulse_dev_flutter: ^0.1.1
 ```
 
 ---

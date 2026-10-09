@@ -25,8 +25,8 @@ forwards them to the Pulse event pipeline — without touching your existing Dio
 
 ```yaml
 dependencies:
-  pulse_dev_flutter: ^0.1.0   # or pulse_dev for pure Dart
-  pulse_dio: ^0.1.0
+  pulse_dev_flutter: ^0.1.1   # or pulse_dev for pure Dart
+  pulse_dio: ^0.1.1
   dio: ^5.4.0
 ```
 

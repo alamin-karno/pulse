@@ -13,13 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## Unreleased
+## 0.1.1
 
 Post-release pub.dev score and code-quality pass across all 4 packages (no public API
-changes). See each package's own CHANGELOG for details.
+changes). Released as `pulse_dev` 0.1.1, `pulse_dev_flutter` 0.1.1, `pulse_http` 0.1.1
+and `pulse_dio` 0.1.1. See each package's own CHANGELOG for details.
 
 ### CI
 
+- Adopted git flow: feature/bugfix PRs target `dev`; `release/x.y.z` and `hotfix/*`
+  PRs target `main`. A new `Branch Policy` workflow enforces the source → target rules
+  and rejects release PRs that still have an `Unreleased` changelog section.
+- `CI` now runs on PRs into `dev`/`main` and on pushes to `dev`/`main` only — previously
+  every job ran twice per PR (branch push + pull_request).
+- `Publish to pub.dev` now publishes one package per `<package>-v<version>` tag, verifies
+  the tag is on `main` and matches the pubspec version and changelog, and configures
+  pub.dev OIDC credentials (previously missing, so tag-triggered publishing would have
+  failed).
+- `Validate Packages` is now a weekly/manual drift check covering all 4 packages
+  (PR dry-runs are already covered by `CI`).
 - Fixed the scheduled `Validate Packages` dry-run failing with "1 checked-in file is
   modified in git". Flutter 3.47+ auto-migrates `analysis_options.yaml` during
   `flutter pub get` (adds `analyzer.exclude` for `build/**` and platform dirs). The
@@ -29,6 +41,11 @@ changes). See each package's own CHANGELOG for details.
 
 ### Tooling
 
+- `melos run check` now invokes its sub-scripts via `dart run melos`, so it works with
+  the workspace's pinned melos (e.g. `fvm exec dart run melos run check`) and no longer
+  requires a globally activated `melos`.
+- Fixed stale `pulse-dart/pulse` links in `CONTRIBUTING.md` and `SECURITY.md`; feature
+  requests now go to GitHub Issues (Discussions aren't enabled).
 - Pinned Flutter 3.47.6 via FVM (`.fvmrc`); every CI workflow now reads the version
   from `.fvmrc` instead of floating on the latest stable channel. `CONTRIBUTING.md`
   documents running melos via `fvm exec dart run melos …`.

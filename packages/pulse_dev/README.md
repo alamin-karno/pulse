@@ -32,7 +32,7 @@ which builds on this package and provides the `Pulse` static API.
 
 ```yaml
 dependencies:
-  pulse_dev: ^0.1.0
+  pulse_dev: ^0.1.1
 ```
 
 For Flutter projects, use `pulse_dev_flutter` instead — it re-exports everything from this package.

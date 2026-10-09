@@ -58,14 +58,14 @@ Add `pulse_dev_flutter` to your Flutter application's `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pulse_dev_flutter: ^0.1.0
+  pulse_dev_flutter: ^0.1.1
 ```
 
 For pure Dart projects (CLI, server-side), use `pulse_dev` directly:
 
 ```yaml
 dependencies:
-  pulse_dev: ^0.1.0
+  pulse_dev: ^0.1.1
 ```
 
 ---

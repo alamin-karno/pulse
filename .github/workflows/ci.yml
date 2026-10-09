@@ -1,14 +1,21 @@
 name: CI
 
+# Git flow: feature/bugfix PRs target `dev`; release/hotfix PRs target `main`.
+# - pull_request → validates every PR into `dev` or `main` before merge.
+# - push → re-validates the integrated result after a merge lands on `dev`/`main`.
+# Pushes to other branches don't run CI on their own (the PR run covers them),
+# which avoids running every job twice per PR.
 on:
-  push:
-    branches: ["**"]
   pull_request:
-    branches: [main]
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Supersede stale PR runs, but let every post-merge run on dev/main finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # ── pulse_dev: format ──────────────────────────────────────────────────

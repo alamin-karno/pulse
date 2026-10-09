@@ -1,6 +1,7 @@
-## Unreleased
+## 0.1.1
 
 ### Changed
+- `kPulseSdkVersion` is now `0.1.1`, so events report the correct SDK version.
 - Shortened the `pubspec.yaml` description to fit pub.dev's 60–180 character guidance.
 - Added dartdoc to `PulseTransaction.create` (previously undocumented).
 - Added `example/example.dart` demonstrating `PulseConfig`, `EventPipeline`, and a

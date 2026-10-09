@@ -3,7 +3,7 @@ description: >-
   Pure Dart core for the Pulse Developer Intelligence SDK — event pipeline,
   privacy sanitization, transport/storage interfaces, and offline queueing.
   Flutter-free.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/alamin-karno/pulse
 homepage: https://github.com/alamin-karno/pulse
 issue_tracker: https://github.com/alamin-karno/pulse/issues

@@ -17,7 +17,7 @@ so we treat them with the highest priority and confidentiality.
 
 ### How to report
 
-Open a [GitHub Security Advisory](https://github.com/pulse-dart/pulse/security/advisories/new)
+Open a [GitHub Security Advisory](https://github.com/alamin-karno/pulse/security/advisories/new)
 on this repository. This channel is private and only visible to maintainers.
 
 Please include:
